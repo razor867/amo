@@ -13,6 +13,8 @@ class Assets extends CI_Controller
         $this->load->library('form_validation');
         $this->load->model('AssetsModel');
         $this->load->model('SuppliersModel');
+        $this->load->model('EmployeeModel');
+        $this->load->model('DepartmentModel');
         date_default_timezone_set('Asia/Jakarta');
         $this->err_upload = '';
 
@@ -50,7 +52,7 @@ class Assets extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = 'Add Asset';
+            $data['title'] = (empty($id)) ? 'Add Asset' : 'Edit Asset';
             $data['page'] = 'assets';
             $data['sub'] = true;
             $data['sub_breadcrumb'] = 'Assets';
@@ -202,6 +204,95 @@ class Assets extends CI_Controller
                 $this->session->set_flashdata('alert', 'success');
                 $this->session->set_flashdata('msg', 'Data successfully deleted');
                 redirect(base_url('assets'));
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    public function getDataJSON()
+    {
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        } else {
+            $id = $this->input->post('id');
+            $dataAsset = $this->AssetsModel->get($id);
+            $data = $dataAsset->result();
+        }
+
+        echo json_encode($data);
+    }
+
+    public function form_lent($id = 0, $title = '')
+    {
+        $is_empty = false;
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                $is_empty = true;
+            } else {
+                if (empty($title)) {
+                    $is_empty = true;
+                } else {
+                    $data['asset_id'] = $id;
+                    $data['asset_name'] = str_replace('_', ' ', $title);
+                    $data['title'] = 'Lent Asset';
+                    $data['page'] = 'assets';
+                    $data['sub'] = true;
+                    $data['sub_breadcrumb'] = 'Assets';
+                    $data['url_sub'] = base_url('assets');
+                    $data['back_url'] = base_url('assets');
+                    $data['form_url'] = base_url('assets/lent/') . $id . '/' . $title;
+                    $data['data_employee'] = $this->EmployeeModel->getAll();
+                    $data['data_department'] = $this->DepartmentModel->getAll();
+                }
+            }
+        } else {
+            $is_empty = true;
+        }
+
+        if ($is_empty) {
+            show_404();
+        } else {
+            $this->load->view('templates/header', $data);
+            $this->load->view('assets/form_lent', $data);
+            $this->load->view('templates/footer', $data);
+        }
+    }
+
+    public function lent($id = 0, $title = '')
+    {
+        $is_error = false;
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                if (empty($title)) {
+                    show_404();
+                } else {
+                    $this->load->helper(array('form'));
+                    $individualis = $this->input->post('individualis');
+
+                    if ($individualis == 'yes') {
+                        $this->form_validation->set_rules('employee_id', 'Employee', 'required|numeric');
+                    } else {
+                        $this->form_validation->set_rules('employee_id', 'Employee', 'required|numeric');
+                        $this->form_validation->set_rules('department_id', 'Department', 'required|numeric');
+                    }
+                    $this->form_validation->set_rules('asset_id', 'Asset ID', 'required|numeric');
+                    $this->form_validation->set_rules('note_lent', 'Note', 'alpha_numeric_spaces');
+                    $this->form_validation->set_rules('date_lent', 'Date lent', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
+                    $this->form_validation->set_rules('date_lent_returned', 'Date returned', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
+
+                    if ($this->form_validation->run() == FALSE) {
+                        $this->form_lent($id, $title);
+                    } else {
+                        //cek apakah ada id nya di asset.
+                        //kalo ada baru di save.
+                        $this->session->set_flashdata('alert', 'success');
+                        $this->session->set_flashdata('msg', 'Data successfully saved');
+                        redirect(base_url('assets'));
+                    }
+                }
             }
         } else {
             show_404();

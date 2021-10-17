@@ -22,17 +22,18 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Information</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <!-- <span aria-hidden="true">&times;</span> -->
                 </button>
             </div>
             <div class="modal-body">
-                Are you sure you will delete this data?
+
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary btn_cancel" data-bs-dismiss="modal">Cancel</button>
                 <a href="" class="btn btn-primary btn_yes">Yes</a>
+                <div class="btn_modal_footer"></div>
             </div>
         </div>
     </div>
@@ -68,8 +69,15 @@
     <script>
         function del(url_del) {
             $('.btn_yes').attr('href', url_del);
+            $(".modal-title").text("Information");
+            $(".modal-dialog").removeClass("modal-xl");
+            $(".btn_yes").css("display", "");
+            $(".btn_cancel").text("Cancel");
+            $(".btn_modal_footer").html("");
+            $('.modal-body').html(`Are you sure you will delete this data?`);
         }
     </script>
+
     <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
@@ -100,6 +108,10 @@
 
 <?php if ($page == 'assets') : ?>
     <script src="<?= base_url('dist_web/dist/js/pages/datatable/assets_data.js') ?>"></script>
+<?php endif ?>
+
+<?php if ($page == 'user_management') : ?>
+    <script src="<?= base_url('dist_web/dist/js/pages/datatable/users_data.js') ?>"></script>
 <?php endif ?>
 
 <?php if (!$sub) : ?>

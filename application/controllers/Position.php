@@ -45,7 +45,7 @@ class Position extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = 'Add Position';
+            $data['title'] = (empty($id)) ? 'Add Position' : 'Edit Position';
             $data['page'] = 'position';
             $data['sub'] = true;
             $data['sub_breadcrumb'] = 'Position';

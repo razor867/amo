@@ -47,7 +47,7 @@ class Department extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = 'Add Department';
+            $data['title'] = (empty($id)) ? 'Add Department' : 'Edit Department';
             $data['page'] = 'department';
             $data['sub'] = true;
             $data['sub_breadcrumb'] = 'Department';

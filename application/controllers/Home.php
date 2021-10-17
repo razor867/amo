@@ -26,4 +26,13 @@ class Home extends CI_Controller
         $this->load->view('home/index', $data);
         $this->load->view('templates/footer', $data);
     }
+
+    public function tes_login()
+    {
+        $data['title'] = 'Login';
+        $data['page'] = 'home';
+        $data['sub'] = false;
+
+        $this->load->view('auth/teslogin', $data);
+    }
 }

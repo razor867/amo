@@ -50,7 +50,7 @@ class Employee extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = 'Add Employee';
+            $data['title'] = (empty($id)) ? 'Add Employee' : 'Edit Employee';
             $data['page'] = 'employee';
             $data['sub'] = true;
             $data['sub_breadcrumb'] = 'Employee';

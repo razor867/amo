@@ -148,7 +148,7 @@ $(document).ready(function () {
 			{
 				data: "name",
 				render: (data, type, row) => {
-					return `<a href="` + site_url + `detail/${row.id}">${row.name}</a>`;
+					return `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick="assetDetail(\' ${row.id} \')">${row.name}</a>`;
 				},
 			},
 			{ data: "serial_number" },
@@ -218,4 +218,84 @@ function status_badge(data) {
 		: data == "Lost"
 		? "bg-secondary"
 		: "bg-info";
+}
+
+function assetDetail(id) {
+	$(".modal-title").text("Asset Detail");
+	$(".modal-dialog").addClass("modal-xl");
+	$(".btn_yes").css("display", "none");
+	$(".btn_cancel").text("Close");
+	$(".btn_modal_footer").html("");
+	$(".modal-body").html(``);
+
+	$.ajax({
+		url: site_url + "assets/getDataJSON",
+		data: {
+			id: id,
+		},
+		method: "post",
+		dataType: "json",
+		success: function (data) {
+			$(".modal-body").html(
+				`
+				<div class="row" style="margin-bottom: 30px">
+					<div class="col-md-3">
+						<img src="${site_url}img_up/assets/${data[0].picture}" alt="" class="w-100">
+					</div>
+					<div class="col-md-6">
+						<h2 class="mb-3">${data[0].name}</h2>
+						<span class="text-white ${status_badge(
+							data[0].status
+						)}" style="padding:7px 15px">${data[0].status.toUpperCase()}</span>
+					</div>
+					<div class="col-md-3">
+						<img src="https://gadgetultra.com/wp-content/uploads/2013/03/QR-CODE.png" alt="" class="w-75">
+						<a href="#" class="btn btn-danger text-white mt-4">Download QR Barcode</a>
+					</div>
+				</div>
+				<div class="row mt-4">
+					<div class="col">
+						<div class="row mb-2">
+							<div class="col-md-3">Detail</div>
+							<div class="col-md-1 float-right">:</div>
+							<div class="col-md-8">${data[0].detail}</div>
+						</div>
+						<div class="row mb-2">
+							<div class="col-md-3">Serial Number</div>
+							<div class="col-md-1 float-right">:</div>
+							<div class="col-md-8">${data[0].serial_number}</div>
+						</div>
+						<div class="row mb-2">
+							<div class="col-md-3">Price</div>
+							<div class="col-md-1 float-right">:</div>
+							<div class="col-md-8">${formatRupiah(data[0].price, "Rp")}</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="row mb-2">
+							<div class="col-md-3">Date Price</div>
+							<div class="col-md-1 float-right">:</div>
+							<div class="col-md-8">${data[0].date_purchase}</div>
+						</div>
+						<div class="row mb-2">
+							<div class="col-md-3">Supplier Name</div>
+							<div class="col-md-1 float-right">:</div>
+							<div class="col-md-8">${data[0].supplier_name}</div>
+						</div>
+						<div class="row mb-2">
+							<div class="col-md-3">Lent to</div>
+							<div class="col-md-1 float-right">:</div>
+							<div class="col-md-8"></div>
+						</div>
+					</div>
+				</div>
+			`
+			);
+			$(".btn_modal_footer").append(
+				`<a href="${site_url}assets/form_lent/${id.trim()}/${data[0].name
+					.split(" ")
+					.join("_")}" class="btn btn-primary">Lent</a>`
+			);
+		},
+	});
 }

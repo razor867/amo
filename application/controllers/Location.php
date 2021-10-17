@@ -45,7 +45,7 @@ class Location extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = 'Add Location';
+            $data['title'] = (empty($id)) ? 'Add Location' : 'Edit Location';
             $data['page'] = 'location';
             $data['sub'] = true;
             $data['sub_breadcrumb'] = 'Location';

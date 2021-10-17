@@ -46,7 +46,7 @@
                                 <th>Name</th>
                                 <th>Serial Number</th>
                                 <th>Price</th>
-                                <th>Suplier Name</th>
+                                <th>Supplier Name</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>

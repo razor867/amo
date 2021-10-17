@@ -45,7 +45,7 @@ class Suppliers extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = 'Add Supplier';
+            $data['title'] = (empty($id)) ? 'Add Supplier' : 'Edit Supplier';
             $data['page'] = 'suppliers';
             $data['sub'] = true;
             $data['sub_breadcrumb'] = 'Suppliers';
