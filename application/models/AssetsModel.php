@@ -34,6 +34,21 @@ class AssetsModel extends CI_Model
         if (empty($id)) {
             //get all
         } else {
+            $this->db->select('a.id, a.picture, a.name, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
+            b.name as supplier_name, a.status, a.picture');
+            $this->db->from('assets as a');
+            $this->db->join('suppliers as b', 'a.supplier_id = b.id', 'left');
+            $this->db->where(['a.id' => $id, 'a.deleted_at' => NULL]);
+            $query = $this->db->get();
+            return $query;
+        }
+    }
+
+    public function getDataJSON($id = 0)
+    {
+        if (empty($id)) {
+            //get all
+        } else {
             $this->db->select('a.id, a.picture, a.name, a.detail, a.serial_number, a.price, DATE_FORMAT(a.date_purchase, "%d/%m/%Y") as date_purchase, a.supplier_id,
             b.name as supplier_name, a.status, a.picture');
             $this->db->from('assets as a');

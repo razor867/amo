@@ -125,7 +125,7 @@ class Assets extends CI_Controller
                     $data['created_at'] = date("Y-m-d H:i:s");
                     $data['created_by'] = $this->user->id;
 
-                    if ($_FILES['picture']['size'] == 0) {
+                    if (!isset($_FILES['picture']) || $_FILES['picture']['error'] == UPLOAD_ERR_NO_FILE) {
                         $data['picture'] = 'not_available.png';
                     } else {
                         $new_name = time() . str_replace(' ', '_', $_FILES["picture"]['name']);
@@ -148,7 +148,7 @@ class Assets extends CI_Controller
                     $data['updated_at'] = date("Y-m-d H:i:s");
                     $data['updated_by'] = $this->user->id;
 
-                    if ($_FILES['picture']['size'] == 0) {
+                    if (!isset($_FILES['picture']) || $_FILES['picture']['error'] == UPLOAD_ERR_NO_FILE) {
                         // $data['picture'] = 'not_available.png';
                     } else {
                         $new_name = time() . str_replace(' ', '_', $_FILES["picture"]['name']);
@@ -164,14 +164,13 @@ class Assets extends CI_Controller
                             $is_success = false;
                         } else {
                             $data['picture'] = $new_name;
+                            $getImageBefore = $this->AssetsModel->get($id);
+                            foreach ($getImageBefore->result() as $r) {
+                                $imgBefore = $r->picture;
+                            }
+                            $path = './img_up/assets/' . $imgBefore;
+                            unlink($path);
                         }
-
-                        $getImageBefore = $this->AssetsModel->get($id);
-                        foreach ($getImageBefore->result() as $r) {
-                            $imgBefore = $r->picture;
-                        }
-                        $path = './img_up/assets/' . $imgBefore;
-                        unlink($path);
                     }
                     $this->AssetsModel->insert($data, $id);
                 }
@@ -182,7 +181,7 @@ class Assets extends CI_Controller
                     redirect(base_url('assets'));
                 } else {
                     $this->err_upload = $this->upload->display_errors();
-                    $this->form();
+                    empty($id) ? $this->form() : $this->form($id);
                 }
             }
         } else {
@@ -216,7 +215,7 @@ class Assets extends CI_Controller
             exit('No direct script access allowed');
         } else {
             $id = $this->input->post('id');
-            $dataAsset = $this->AssetsModel->get($id);
+            $dataAsset = $this->AssetsModel->getDataJSON($id);
             $data = $dataAsset->result();
         }
 

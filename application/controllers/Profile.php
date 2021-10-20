@@ -5,11 +5,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Profile extends CI_Controller
 {
     protected $user;
+    protected $err_upload;
 
     public function __construct()
     {
         parent::__construct();
         $this->load->library('form_validation');
+        $this->load->model('ProfileModel');
+        $this->err_upload = '';
 
         if (!$this->ion_auth->logged_in()) {
             redirect('auth/login');
@@ -33,35 +36,25 @@ class Profile extends CI_Controller
     public function form($id = 0)
     {
         if (is_numeric($id)) {
-            $data['title'] = (empty($id)) ? 'Add Department' : 'Edit Department';
-            $data['page'] = 'department';
+            $data['title'] = 'Edit Profile';
+            $data['page'] = 'profile';
             $data['sub'] = true;
-            $data['sub_breadcrumb'] = 'Department';
-            $data['url_sub'] = base_url('department');
-            $data['back_url'] = base_url('department');
-            $data['data_location'] = $this->LocationModel->getAll();
+            $data['sub_breadcrumb'] = 'Profile';
+            $data['url_sub'] = base_url('profile');
+            $data['back_url'] = base_url('profile');
+            $data['data_user'] = $this->ion_auth->user()->row();
+            $data['err_upload'] = $this->err_upload;
 
             if (empty($id)) {
-                $data['form_url'] = base_url('department/save');
-                $data['is_edit'] = false;
+                redirect(base_url('profile'));
             } else {
-                $data['form_url'] = base_url('department/save/') . $id;
+                $data['form_url'] = base_url('profile/save/') . $id;
                 $data['is_edit'] = true;
 
-                $getEdit = $this->DepartmentModel->get($id);
-                foreach ($getEdit->result() as $r) {
-                    $data['name'] = $r->name;
-                    $data['location_id'] = $r->location_id;
-                }
-                $getLocation = $this->LocationModel->get($data['location_id']);
-                foreach ($getLocation->result() as $r) {
-                    $data['location_name'] = $r->name;
-                }
+                $this->load->view('templates/header', $data);
+                $this->load->view('profile/form', $data);
+                $this->load->view('templates/footer', $data);
             }
-
-            $this->load->view('templates/header', $data);
-            $this->load->view('department/form', $data);
-            $this->load->view('templates/footer', $data);
         } else {
             show_404();
         }
@@ -70,54 +63,68 @@ class Profile extends CI_Controller
     public function save($id = 0)
     {
         if (is_numeric($id)) {
+            $is_success = true;
             $this->load->helper(array('form'));
 
-            $this->form_validation->set_rules('name', 'Department name', 'required|alpha_numeric_spaces');
-            $this->form_validation->set_rules('location_id', 'Location name', 'required|numeric');
+            $this->form_validation->set_rules('first_name', 'Firstname', 'trim|required|alpha_numeric_spaces');
+            $this->form_validation->set_rules('last_name', 'Lastname', 'trim|required|alpha_numeric_spaces');
+            $this->form_validation->set_rules('about', 'About', 'required');
+            // $this->form_validation->set_message('customAlpha', 'The About field may only contain customAlpha characters and spaces.');
 
-            if ($this->form_validation->run() == FALSE) {
-                empty($id) ? $this->form() : $this->form($id);
+            if (empty($id)) {
+                redirect(base_url('profile'));
             } else {
-                $data['name'] = $this->input->post('name');
-                $data['location_id'] = $this->input->post('location_id');
-
-                if (empty($id)) {
-                    $data['created_at'] = date("Y-m-d H:i:s");
-                    $data['created_by'] = $this->user->id;
-
-                    $this->DepartmentModel->insert($data);
+                if ($this->form_validation->run() == FALSE) {
+                    $is_success = false;
                 } else {
-                    $data['updated_at'] = date("Y-m-d H:i:s");
-                    $data['updated_by'] = $this->user->id;
+                    $data['first_name'] = $this->input->post('first_name');
+                    $data['last_name'] = $this->input->post('last_name');
+                    $data['about'] = $this->input->post('about', TRUE);
 
-                    $this->DepartmentModel->insert($data, $id);
+                    if (!isset($_FILES['picture']) || $_FILES['picture']['error'] == UPLOAD_ERR_NO_FILE) {
+                        //...
+                    } else {
+                        $new_name = time() . str_replace(' ', '_', $_FILES["picture"]['name']);
+                        $config['upload_path']          = './dist_web/images/users/';
+                        $config['allowed_types']        = 'gif|jpg|png|jpeg';
+                        $config['max_size']             = 1024;
+                        $config['file_name'] = $new_name;
+                        $config['file_ext_tolower'] = TRUE;
+
+                        $this->load->library('upload', $config);
+
+                        if (!$this->upload->do_upload('picture')) {
+                            $is_success = false;
+                            $this->err_upload = $this->upload->display_errors();
+                        } else {
+                            $data['picture'] = $new_name;
+                            $getImageBefore = $this->ProfileModel->get($id);
+                            foreach ($getImageBefore->result() as $r) {
+                                $imgBefore = $r->picture;
+                            }
+                            $path = './dist_web/images/users/' . $imgBefore;
+                            unlink($path);
+                        }
+                    }
                 }
-                $this->session->set_flashdata('alert', 'success');
-                $this->session->set_flashdata('msg', 'Data successfully saved');
-                redirect(base_url('department'));
+                if ($is_success) {
+                    $this->ProfileModel->insert($data, $id);
+                    $this->session->set_flashdata('alert', 'success');
+                    $this->session->set_flashdata('msg', 'Data successfully saved');
+                    redirect(base_url('profile'));
+                } else {
+                    $this->form($id);
+                }
             }
         } else {
             show_404();
         }
     }
 
-    public function delete($id = 0)
+    public function customAlpha($str)
     {
-        if (is_numeric($id)) {
-            if (empty($id)) {
-                $this->session->set_flashdata('alert', 'fail');
-                $this->session->set_flashdata('msg', 'Errors occurred, failed to delete data');
-                redirect(base_url('department'));
-            } else {
-                $data['deleted_at'] = date("Y-m-d H:i:s");
-                $data['deleted_by'] = $this->user->id;
-                $this->DepartmentModel->delete($id, $data);
-                $this->session->set_flashdata('alert', 'success');
-                $this->session->set_flashdata('msg', 'Data successfully deleted');
-                redirect(base_url('department'));
-            }
-        } else {
-            show_404();
+        if (!preg_match('/^[a-z .,\-]+$/i', $str)) {
+            return false;
         }
     }
 }

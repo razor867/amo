@@ -30,6 +30,42 @@
         <div class="card">
             <div class="card-body">
                 <p class="mb-4">On this page is displayed your profile data and also you can change your profile here.</p>
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="<?= base_url('dist_web/images/users/') . $data_user->picture ?>" alt="" class="w-100 mb-3">
+                        <center>
+                            <?php if ($this->ion_auth->in_group('admin')) : ?>
+                                <span class="badge bg-secondary text-white">Admin</span>
+                            <?php else : ?>
+                                <span class="badge bg-secondary text-white">Member</span>
+                            <?php endif ?>
+
+                        </center>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                Full name
+                            </div>
+                            :
+                            <div class="col-md-9">
+                                <?= $data_user->first_name . ' ' . $data_user->last_name ?>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                About
+                            </div>
+                            :
+                            <div class="col-md-9">
+                                <?= $data_user->about ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <a href="<?= base_url('profile/form/') . $data_user->id ?>" class="btn btn-primary mt-4" style="float: right;"><span class="mdi mdi-account-edit"></span> Edit Profile</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
