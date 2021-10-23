@@ -43,10 +43,10 @@
                             <tr>
                                 <th>No</th>
                                 <th>Picture</th>
-                                <th>Name</th>
+                                <th>Asset Name</th>
+                                <th>Asset Code</th>
                                 <th>Serial Number</th>
                                 <th>Price</th>
-                                <th>Supplier Name</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>

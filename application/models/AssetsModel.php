@@ -20,7 +20,7 @@ class AssetsModel extends CI_Model
 
     public function getAll()
     {
-        $this->db->select('a.id, a.picture, a.name, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
+        $this->db->select('a.id, a.picture, a.name, a.asset_code, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
             b.name as supplier_name, a.status, a.picture');
         $this->db->from('assets as a');
         $this->db->join('suppliers as b', 'a.supplier_id = b.id', 'left');
@@ -34,7 +34,7 @@ class AssetsModel extends CI_Model
         if (empty($id)) {
             //get all
         } else {
-            $this->db->select('a.id, a.picture, a.name, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
+            $this->db->select('a.id, a.picture, a.name, a.asset_code, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
             b.name as supplier_name, a.status, a.picture');
             $this->db->from('assets as a');
             $this->db->join('suppliers as b', 'a.supplier_id = b.id', 'left');
@@ -49,7 +49,7 @@ class AssetsModel extends CI_Model
         if (empty($id)) {
             //get all
         } else {
-            $this->db->select('a.id, a.picture, a.name, a.detail, a.serial_number, a.price, DATE_FORMAT(a.date_purchase, "%d/%m/%Y") as date_purchase, a.supplier_id,
+            $this->db->select('a.id, a.picture, a.name, a.asset_code, a.detail, a.serial_number, a.price, DATE_FORMAT(a.date_purchase, "%d/%m/%Y") as date_purchase, a.supplier_id,
             b.name as supplier_name, a.status, a.picture');
             $this->db->from('assets as a');
             $this->db->join('suppliers as b', 'a.supplier_id = b.id', 'left');
@@ -57,5 +57,29 @@ class AssetsModel extends CI_Model
             $query = $this->db->get();
             return $query;
         }
+    }
+
+    public function dupLent($id)
+    {
+        $this->db->select('asset_id');
+        $this->db->from('lent');
+        $this->db->where(['asset_id' => $id, 'deleted_at' => NULL]);
+        $query = $this->db->get();
+        return $query;
+    }
+
+    public function lentAsset($data)
+    {
+        $this->db->insert('lent', $data);
+    }
+
+    public function getBorrower($id)
+    {
+        $this->db->select("(CASE WHEN a.department_id = 0 THEN b.name ELSE CONCAT(b.name, '_n_', a.department_id) END) as borrowers");
+        $this->db->from('lent as a');
+        $this->db->join('employee as b', 'a.employee_id = b.id', 'left');
+        $this->db->where(['a.asset_id' => $id, 'a.status' => 'Lent', 'a.deleted_at' => NULL]);
+        $query = $this->db->get();
+        return $query;
     }
 }

@@ -13,6 +13,15 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
+                        <label for="asset_code" class="col-sm-3 col-form-label">Asset Code</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="asset_code" class="form-control <?= form_error('asset_code') ? 'is-invalid' : '' ?>" id="asset_code" value="<?= $is_edit ? $asset_code : set_value('asset_code') ?>">
+                            <div class="invalid-feedback">
+                                <?= form_error('asset_code') ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
                         <label for="detail" class="col-sm-3 col-form-label">Detail</label>
                         <div class="col-sm-9">
                             <textarea name="detail" id="detail" class="form-control <?= form_error('detail') ? 'is-invalid' : '' ?>" cols="30" rows="5"><?= $is_edit ? $detail : set_value('detail') ?></textarea>
@@ -68,7 +77,7 @@
                     </div>
                     <div class="mb-3 row">
                         <label for="date_purchase" class="col-sm-3 col-form-label">Date Purchase</label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             <input type="date" class="form-control <?= form_error('date_purchase') ? 'is-invalid' : '' ?>" id="date_purchase" name="date_purchase" value="<?= $is_edit ? $date_purchase : set_value('date_purchase') ?>">
                             <div class="invalid-feedback">
                                 <?= form_error('date_purchase') ?>

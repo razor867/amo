@@ -108,6 +108,7 @@
 
 <?php if ($page == 'assets') : ?>
     <script src="<?= base_url('dist_web/dist/js/pages/datatable/assets_data.js') ?>"></script>
+    <script src="<?= base_url('dist_web/libs/qr-code/qrcode.min.js') ?>"></script>
 <?php endif ?>
 
 <?php if ($page == 'user_management') : ?>

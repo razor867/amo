@@ -96,13 +96,17 @@ $(document).ready(function () {
 				targets: [3],
 			},
 			{
-				className: "wrap-max-15",
+				className: "wrap-max-10",
 				targets: [4],
 			},
 			{
-				className: "wrap-max-10",
+				className: "wrap-max-15",
 				targets: [5],
 			},
+			// {
+			// 	className: "wrap-max-10",
+			// 	targets: [6],
+			// },
 			{
 				className: "wrap-max-10",
 				targets: [6],
@@ -151,6 +155,7 @@ $(document).ready(function () {
 					return `<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick="assetDetail(\' ${row.id} \')">${row.name}</a>`;
 				},
 			},
+			{ data: "asset_code" },
 			{ data: "serial_number" },
 			{
 				data: "price",
@@ -158,7 +163,7 @@ $(document).ready(function () {
 					return formatRupiah(row.price, "Rp");
 				},
 			},
-			{ data: "supplier_name" },
+			// { data: "supplier_name" },
 			{
 				data: "status",
 				render: (data, type, row) => {
@@ -239,63 +244,84 @@ function assetDetail(id) {
 			$(".modal-body").html(
 				`
 				<div class="row" style="margin-bottom: 30px">
-					<div class="col-md-3">
+			 		<div class="col-md-3">
 						<img src="${site_url}img_up/assets/${data[0].picture}" alt="" class="w-100">
 					</div>
 					<div class="col-md-6">
-						<h2 class="mb-3">${data[0].name}</h2>
-						<span class="text-white ${status_badge(
+			 			<h2 class="mb-3">${data[0].name}</h2>
+			 			<span class="text-white ${status_badge(
 							data[0].status
 						)}" style="padding:7px 15px">${data[0].status.toUpperCase()}</span>
 					</div>
 					<div class="col-md-3">
-						<img src="https://gadgetultra.com/wp-content/uploads/2013/03/QR-CODE.png" alt="" class="w-75">
+						<div id="qrcode" style="width:190px; height:190px;"></div>
 						<a href="#" class="btn btn-danger text-white mt-4">Download QR Barcode</a>
 					</div>
 				</div>
 				<div class="row mt-4">
-					<div class="col">
-						<div class="row mb-2">
-							<div class="col-md-3">Detail</div>
-							<div class="col-md-1 float-right">:</div>
-							<div class="col-md-8">${data[0].detail}</div>
-						</div>
-						<div class="row mb-2">
-							<div class="col-md-3">Serial Number</div>
-							<div class="col-md-1 float-right">:</div>
-							<div class="col-md-8">${data[0].serial_number}</div>
-						</div>
-						<div class="row mb-2">
-							<div class="col-md-3">Price</div>
-							<div class="col-md-1 float-right">:</div>
-							<div class="col-md-8">${formatRupiah(data[0].price, "Rp")}</div>
-						</div>
-					</div>
-					<div class="col">
-						<div class="row mb-2">
-							<div class="col-md-3">Date Price</div>
-							<div class="col-md-1 float-right">:</div>
-							<div class="col-md-8">${data[0].date_purchase}</div>
-						</div>
-						<div class="row mb-2">
-							<div class="col-md-3">Supplier Name</div>
-							<div class="col-md-1 float-right">:</div>
-							<div class="col-md-8">${data[0].supplier_name}</div>
-						</div>
-						<div class="row mb-2">
-							<div class="col-md-3">Lent to</div>
-							<div class="col-md-1 float-right">:</div>
-							<div class="col-md-8"></div>
-						</div>
-					</div>
-				</div>
-			`
+                    <div class="col">
+                        <table class="table table-bordered table_detail">
+                            <tbody>
+								<tr>
+									<th>Detail</th>
+									<td>${data[0].detail}</td>
+								</tr>
+								<tr>
+									<th>Asset Code</th>
+									<td>${data[0].asset_code}</td>
+								</tr>
+								<tr>
+									<th>Serial Number</th>
+									<td>${data[0].serial_number}</td>
+								</tr>
+								<tr>
+									<th>Price</th>
+									<td>${formatRupiah(data[0].price, "Rp")}</td>
+								</tr>
+							</tbody>
+                        </table>
+                    </div>
+                    <div class="col">
+                        <table class="table table-bordered table_detail">
+                            <tbody>
+								<tr>
+									<th>Date Purchase</th>
+									<td>${data[0].date_purchase}</td>
+								</tr>
+								<tr>
+									<th>Supplier Name</th>
+									<td>${data[0].supplier_name}</td>
+								</tr>
+								<tr>
+									<th>Lent to</th>
+									<td>` +
+					data[1] +
+					`</td>
+								</tr>
+							</tbody>
+                        </table>
+                    </div>
+                </div>`
 			);
-			$(".btn_modal_footer").append(
-				`<a href="${site_url}assets/form_lent/${id.trim()}/${data[0].name
-					.split(" ")
-					.join("_")}" class="btn btn-primary">Lent</a>`
-			);
+			if (data[0].status == "Ready") {
+				$(".btn_modal_footer").append(
+					`<a href="${site_url}assets/form_lent/${id.trim()}/${data[0].name
+						.split(" ")
+						.join("_")}" class="btn btn-primary">Lent</a>`
+				);
+			} else if (data[0].status == "Lent") {
+				$(".btn_modal_footer").append(
+					`<a href="${site_url}assets/form_lent/${id.trim()}/${data[0].name
+						.split(" ")
+						.join("_")}" class="btn btn-success text-white">Return Asset</a>`
+				);
+			}
+			var qrcode = new QRCode(document.getElementById("qrcode"), {
+				width: 190,
+				height: 190,
+			});
+			const link = site_url;
+			qrcode.makeCode(link);
 		},
 	});
 }

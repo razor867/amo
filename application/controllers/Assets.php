@@ -39,7 +39,7 @@ class Assets extends CI_Controller
     public function listdata()
     {
         $this->load->library("datatables");
-        $this->datatables->select('a.id, a.picture, a.name, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
+        $this->datatables->select('a.id, a.picture, a.name, a.asset_code, a.detail, a.serial_number, a.price, a.date_purchase, a.supplier_id,
             b.name as supplier_name, a.status, a.picture');
         $this->datatables->from('assets as a');
         $this->datatables->join('suppliers as b', 'a.supplier_id = b.id', 'left');
@@ -79,6 +79,7 @@ class Assets extends CI_Controller
                     $data['supplier_id'] = $r->supplier_id;
                     $data['serial_number'] = $r->serial_number;
                     $data['status'] = $r->status;
+                    $data['asset_code'] = $r->asset_code;
                 }
                 $data['image_display'] = base_url() . '/img_up/assets/' . $data['picture'];
 
@@ -103,7 +104,8 @@ class Assets extends CI_Controller
             $this->load->helper(array('form'));
 
             $this->form_validation->set_rules('name', 'Department name', 'required|alpha_numeric_spaces');
-            $this->form_validation->set_rules('detail', 'Detail', 'alpha_numeric_spaces');
+            $this->form_validation->set_rules('asset_code', 'Asset code', 'required|alpha_numeric');
+            $this->form_validation->set_rules('detail', 'Detail', '');
             $this->form_validation->set_rules('supplier_id', 'Supplier', 'required|numeric');
             $this->form_validation->set_rules('price', 'Price', 'required|numeric');
             $this->form_validation->set_rules('serial_number', 'Serial number', 'required|alpha_numeric_spaces');
@@ -114,7 +116,8 @@ class Assets extends CI_Controller
                 empty($id) ? $this->form() : $this->form($id);
             } else {
                 $data['name'] = $this->input->post('name');
-                $data['detail'] = $this->input->post('detail');
+                $data['asset_code'] = $this->input->post('asset_code');
+                $data['detail'] = $this->input->post('detail', TRUE);
                 $data['supplier_id'] = $this->input->post('supplier_id');
                 $data['price'] = $this->input->post('price');
                 $data['serial_number'] = $this->input->post('serial_number');
@@ -217,6 +220,25 @@ class Assets extends CI_Controller
             $id = $this->input->post('id');
             $dataAsset = $this->AssetsModel->getDataJSON($id);
             $data = $dataAsset->result();
+
+            foreach ($dataAsset->result() as $r) {
+                $status = $r->status;
+            }
+            if ($status == 'Lent') {
+                $borrower = $this->AssetsModel->getBorrower($id);
+                foreach ($borrower->result() as $r) {
+                    $data[1] = $r->borrowers;
+                }
+                $pattern = '/_n_/i';
+                $check = preg_match($pattern, $data[1]);
+                if (!empty($check)) {
+                    $borrower_data = explode('_n_', $data[1]);
+                    $department_name = $this->getDepartmentName($borrower_data[1]);
+                    $data[1] = $department_name . ' Department on behalf of ' . $borrower_data[0];
+                }
+            } else {
+                $data[1] = '';
+            }
         }
 
         echo json_encode($data);
@@ -269,7 +291,11 @@ class Assets extends CI_Controller
                     show_404();
                 } else {
                     $this->load->helper(array('form'));
-                    $individualis = $this->input->post('individualis');
+                    if (isset($_POST['individualis'])) {
+                        $individualis = $this->input->post('individualis');
+                    } else {
+                        $individualis = 'no';
+                    }
 
                     if ($individualis == 'yes') {
                         $this->form_validation->set_rules('employee_id', 'Employee', 'required|numeric');
@@ -278,23 +304,54 @@ class Assets extends CI_Controller
                         $this->form_validation->set_rules('department_id', 'Department', 'required|numeric');
                     }
                     $this->form_validation->set_rules('asset_id', 'Asset ID', 'required|numeric');
-                    $this->form_validation->set_rules('note_lent', 'Note', 'alpha_numeric_spaces');
+                    $this->form_validation->set_rules('note_lent', 'Note', '');
                     $this->form_validation->set_rules('date_lent', 'Date lent', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
                     $this->form_validation->set_rules('date_lent_returned', 'Date returned', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
 
                     if ($this->form_validation->run() == FALSE) {
                         $this->form_lent($id, $title);
                     } else {
+                        $data['asset_id'] = $this->input->post('asset_id');
+                        $data['employee_id'] = $this->input->post('employee_id');
+                        if ($individualis == 'yes') {
+                            $data['department_id'] = 0;
+                        } else {
+                            $data['department_id'] = $this->input->post('department_id');
+                        }
+                        $data['note_lent'] = $this->input->post('note_lent', TRUE);
+                        $data['date_lent'] = $this->input->post('date_lent');
+                        $data['date_lent_returned'] = $this->input->post('date_lent_returned');
+                        $data['status'] = 'Lent';
+                        $data['created_at'] = date("Y-m-d H:i:s");
+                        $data['created_by'] = $this->user->id;
                         //cek apakah ada id nya di asset.
+                        $check_dup = $this->AssetsModel->dupLent($data['asset_id']);
                         //kalo ada baru di save.
-                        $this->session->set_flashdata('alert', 'success');
-                        $this->session->set_flashdata('msg', 'Data successfully saved');
-                        redirect(base_url('assets'));
+                        if ($check_dup->result()) {
+                            $this->session->set_flashdata('alert', 'fail');
+                            $this->session->set_flashdata('msg', 'The asset failed to lent, because this asset has not been returned');
+                            $this->form_lent($id, $title);
+                        } else {
+                            $title = str_replace('_', ' ', $title);
+                            $this->AssetsModel->lentAsset($data);
+                            $this->AssetsModel->insert(['status' => 'Lent'], $data['asset_id']);
+                            $this->session->set_flashdata('alert', 'success');
+                            $this->session->set_flashdata('msg', '<b>' . $title . '</b>' . ' successfully lent');
+                            redirect(base_url('assets'));
+                        }
                     }
                 }
             }
         } else {
             show_404();
+        }
+    }
+
+    public function getDepartmentName($id)
+    {
+        $department = $this->DepartmentModel->get($id);
+        foreach ($department->result() as $r) {
+            return $r->name;
         }
     }
 }

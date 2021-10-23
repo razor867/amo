@@ -68,7 +68,7 @@
                     </div>
                     <div class="mb-3 row">
                         <label for="date_of_birth" class="col-sm-3 col-form-label">Date of birth</label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             <input type="date" class="form-control <?= form_error('date_of_birth') ? 'is-invalid' : '' ?>" id="date_of_birth" name="date_of_birth" value="<?= $is_edit ? $date_of_birth : set_value('date_of_birth') ?>">
                             <div class="invalid-feedback">
                                 <?= form_error('date_of_birth') ?>
