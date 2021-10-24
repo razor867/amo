@@ -78,7 +78,6 @@ class Assets extends CI_Controller
                     $data['date_purchase'] = $r->date_purchase;
                     $data['supplier_id'] = $r->supplier_id;
                     $data['serial_number'] = $r->serial_number;
-                    $data['status'] = $r->status;
                     $data['asset_code'] = $r->asset_code;
                 }
                 $data['image_display'] = base_url() . '/img_up/assets/' . $data['picture'];
@@ -110,7 +109,6 @@ class Assets extends CI_Controller
             $this->form_validation->set_rules('price', 'Price', 'required|numeric');
             $this->form_validation->set_rules('serial_number', 'Serial number', 'required|alpha_numeric_spaces');
             $this->form_validation->set_rules('date_purchase', 'Date purchase', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
-            $this->form_validation->set_rules('status', 'status', 'required|alpha_numeric_spaces');
 
             if ($this->form_validation->run() == FALSE) {
                 empty($id) ? $this->form() : $this->form($id);
@@ -122,11 +120,11 @@ class Assets extends CI_Controller
                 $data['price'] = $this->input->post('price');
                 $data['serial_number'] = $this->input->post('serial_number');
                 $data['date_purchase'] = $this->input->post('date_purchase');
-                $data['status'] = $this->input->post('status');
 
                 if (empty($id)) {
                     $data['created_at'] = date("Y-m-d H:i:s");
                     $data['created_by'] = $this->user->id;
+                    $data['Status'] = 'Ready';
 
                     if (!isset($_FILES['picture']) || $_FILES['picture']['error'] == UPLOAD_ERR_NO_FILE) {
                         $data['picture'] = 'not_available.png';
@@ -318,7 +316,7 @@ class Assets extends CI_Controller
                         } else {
                             $data['department_id'] = $this->input->post('department_id');
                         }
-                        $data['note_lent'] = $this->input->post('note_lent', TRUE);
+                        $data['note_lent'] = ($this->input->post('note_lent', TRUE) != '') ? $this->input->post('note_lent', TRUE) : NULL;
                         $data['date_lent'] = $this->input->post('date_lent');
                         $data['date_lent_returned'] = $this->input->post('date_lent_returned');
                         $data['status'] = 'Lent';
@@ -352,6 +350,87 @@ class Assets extends CI_Controller
         $department = $this->DepartmentModel->get($id);
         foreach ($department->result() as $r) {
             return $r->name;
+        }
+    }
+
+    public function form_return($id = 0, $title = '')
+    {
+        $is_empty = false;
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                $is_empty = true;
+            } else {
+                if (empty($title)) {
+                    $is_empty = true;
+                } else {
+                    $data['asset_id'] = $id;
+                    $data['asset_name'] = str_replace('_', ' ', $title);
+                    $data['title'] = 'Return Asset';
+                    $data['page'] = 'assets';
+                    $data['sub'] = true;
+                    $data['sub_breadcrumb'] = 'Assets';
+                    $data['url_sub'] = base_url('assets');
+                    $data['back_url'] = base_url('assets');
+                    $data['form_url'] = base_url('assets/return_asset/') . $id . '/' . $title;
+
+                    $data_lent = $this->AssetsModel->getLent($id);
+                    foreach ($data_lent->result() as $r) {
+                        $data['scheduled_asset_return'] = $r->date_lent_returned;
+                    }
+                }
+            }
+        } else {
+            $is_empty = true;
+        }
+
+        if ($is_empty) {
+            show_404();
+        } else {
+            $this->load->view('templates/header', $data);
+            $this->load->view('assets/form_return', $data);
+            $this->load->view('templates/footer', $data);
+        }
+    }
+
+    public function return_asset($id = 0, $title = '')
+    {
+        $is_empty = false;
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                if (empty($title)) {
+                    show_404();
+                } else {
+                    //add returned
+                    $this->form_validation->set_rules('asset_id', 'Asset ID', 'required|numeric');
+                    $this->form_validation->set_rules('note_returned', 'Note', '');
+                    $this->form_validation->set_rules('date_returned', 'Date returned', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
+                    $this->form_validation->set_rules('fine', 'Fine', 'required|numeric');
+
+                    if ($this->form_validation->run() == FALSE) {
+                        $this->form_return($id, $title);
+                    } else {
+                        $asset_id = $this->input->post('asset_id');
+                        $data['date_returned'] = $this->input->post('date_returned');
+                        $data['note_returned'] = ($this->input->post('note_returned', TRUE) != '') ? $this->input->post('note_returned', TRUE) : NULL;
+                        $data['fine'] = $this->input->post('fine');
+                        $data['status'] = 'Returned';
+                        $data['updated_at'] = date("Y-m-d H:i:s");
+                        $data['updated_by'] = $this->user->id;
+
+                        $this->AssetsModel->return_asset($asset_id, $data);
+                        //Update Status Assets
+                        $this->AssetsModel->insert(['updated_at' => $data['updated_at'], 'updated_by' => $data['updated_by'], 'status' => 'Ready'], $asset_id);
+
+                        $this->session->set_flashdata('alert', 'success');
+                        $this->session->set_flashdata('msg', '<b>' . $title . '</b>' . ' successfully returned');
+                        redirect(base_url('assets'));
+                    }
+                }
+            }
+        } else {
+            show_404();
         }
     }
 }

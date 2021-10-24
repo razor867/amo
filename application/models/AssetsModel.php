@@ -82,4 +82,17 @@ class AssetsModel extends CI_Model
         $query = $this->db->get();
         return $query;
     }
+
+    public function getLent($asset_id)
+    {
+        $this->db->where(['asset_id' => $asset_id, 'status' => 'Lent', 'deleted_at' => NULL]);
+        $query = $this->db->get('lent');
+        return $query;
+    }
+
+    public function return_asset($asset_id, $data)
+    {
+        $this->db->where('asset_id', $asset_id);
+        $this->db->update('lent', $data);
+    }
 }

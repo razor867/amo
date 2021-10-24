@@ -251,7 +251,14 @@ function assetDetail(id) {
 			 			<h2 class="mb-3">${data[0].name}</h2>
 			 			<span class="text-white ${status_badge(
 							data[0].status
-						)}" style="padding:7px 15px">${data[0].status.toUpperCase()}</span>
+						)}" style="padding:7px 15px; border-radius:3px;">${data[0].status.toUpperCase()}</span>
+						<br>
+						<p class="mt-4"><b>Change Status</b></p>
+						<div class="btn-group" role="group" aria-label="Basic example">
+							<a href="" type="button" class="btn btn-secondary">Broken</a>
+							<a href="" type="button" class="btn btn-secondary">Lost</a>
+							<a href="" type="button" class="btn btn-secondary">Repair</a>
+						</div>
 					</div>
 					<div class="col-md-3">
 						<div id="qrcode" style="width:190px; height:190px;"></div>
@@ -311,7 +318,7 @@ function assetDetail(id) {
 				);
 			} else if (data[0].status == "Lent") {
 				$(".btn_modal_footer").append(
-					`<a href="${site_url}assets/form_lent/${id.trim()}/${data[0].name
+					`<a href="${site_url}assets/form_return/${id.trim()}/${data[0].name
 						.split(" ")
 						.join("_")}" class="btn btn-success text-white">Return Asset</a>`
 				);

@@ -67,7 +67,7 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="note_lent" class="col-sm-3 col-form-label">Note</label>
+                        <label for="note_lent" class="col-sm-3 col-form-label">Note (Optional)</label>
                         <div class="col-sm-9">
                             <textarea name="note_lent" id="note_lent" class="form-control <?= form_error('note_lent') ? 'is-invalid' : '' ?>" cols="30" rows="5"><?= set_value('note_lent') ?></textarea>
                             <div class="invalid-feedback">
@@ -85,7 +85,7 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="date_lent_returned" class="col-sm-3 col-form-label">Date Returned</label>
+                        <label for="date_lent_returned" class="col-sm-3 col-form-label">Will be Returned Date?</label>
                         <div class="col-sm-4">
                             <input type="date" class="form-control <?= form_error('date_lent_returned') ? 'is-invalid' : '' ?>" id="date_lent_returned" name="date_lent_returned" value="<?= set_value('date_lent_returned') ?>">
                             <div class="invalid-feedback">

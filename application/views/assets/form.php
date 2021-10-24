@@ -84,26 +84,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3 row">
-                        <label for="status" class="col-sm-3 col-form-label">Status</label>
-                        <div class="col-sm-9">
-                            <select name="status" class="form-control <?= form_error('status') ? 'is-invalid' : '' ?>" id="status">
-                                <?php if ($is_edit) : ?>
-                                    <option value="<?= $status ?>"><?= $status ?></option>
-                                <?php else : ?>
-                                    <option value="">-- Choose Status --</option>
-                                <?php endif ?>
-                                <option value="Ready">Ready</option>
-                                <option value="Lent">Lent</option>
-                                <option value="Broken">Broken</option>
-                                <option value="Lost">Lost</option>
-                                <option value="Repair">Repair</option>
-                            </select>
-                            <div class="invalid-feedback">
-                                <?= form_error('status') ?>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="mb-3 row">
                         <label for="picture" class="col-sm-3 col-form-label">Asset Image</label>
