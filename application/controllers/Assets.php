@@ -433,4 +433,160 @@ class Assets extends CI_Controller
             show_404();
         }
     }
+
+    public function status_broken($id = 0)
+    {
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                $check_status = $this->AssetsModel->get($id);
+                foreach ($check_status->result() as $r) {
+                    $status = $r->status;
+                    $asset_name = $r->name;
+                }
+
+                if ($status == 'Ready') {
+                    $data['status'] = 'Broken';
+                    $data['updated_at'] = date("Y-m-d H:i:s");
+                    $data['updated_by'] = $this->user->id;
+
+                    $this->AssetsModel->insert($data, $id);
+                    $this->session->set_flashdata('alert', 'success');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Broken</b>');
+                } else {
+                    $this->session->set_flashdata('alert', 'fail');
+                    if ($status == 'Lent') {
+                        $this->session->set_flashdata('msg', 'You must return the asset before change status to Broken');
+                    } else {
+                        $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status to <b>Broken</b>');
+                    }
+                }
+                redirect(base_url('assets'));
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    public function status_lost($id = 0)
+    {
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                $check_status = $this->AssetsModel->get($id);
+                foreach ($check_status->result() as $r) {
+                    $status = $r->status;
+                    $asset_name = $r->name;
+                }
+
+                if ($status == 'Ready') {
+                    $data['status'] = 'Lost';
+                    $data['updated_at'] = date("Y-m-d H:i:s");
+                    $data['updated_by'] = $this->user->id;
+
+                    $this->AssetsModel->insert($data, $id);
+                    $this->session->set_flashdata('alert', 'success');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Lost</b>');
+                } else {
+                    $this->session->set_flashdata('alert', 'fail');
+                    if ($status == 'Lent') {
+                        $this->session->set_flashdata('msg', 'You must return the asset before change status to Lost');
+                    } else {
+                        $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status to <b>Lost</b>');
+                    }
+                }
+                redirect(base_url('assets'));
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    public function status_unlost($id = 0)
+    {
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                $check_status = $this->AssetsModel->get($id);
+                foreach ($check_status->result() as $r) {
+                    $status = $r->status;
+                    $asset_name = $r->name;
+                }
+
+                if ($status == 'Lost') {
+                    $data['status'] = 'Ready';
+                    $data['updated_at'] = date("Y-m-d H:i:s");
+                    $data['updated_by'] = $this->user->id;
+
+                    $this->AssetsModel->insert($data, $id);
+                    $this->session->set_flashdata('alert', 'success');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Ready</b>');
+                } else {
+                    $this->session->set_flashdata('alert', 'fail');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status to <b>Ready</b>');
+                }
+                redirect(base_url('assets'));
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    public function form_repair($id = 0, $title = '')
+    {
+        $is_empty = false;
+        $is_broken = true;
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                $is_empty = true;
+            } else {
+                if (empty($title)) {
+                    $is_empty = true;
+                } else {
+                    $check_status = $this->AssetsModel->get($id);
+                    foreach ($check_status->result() as $r) {
+                        $status = $r->status;
+                        $asset_name = $r->name;
+                    }
+
+                    if ($status == 'Broken') {
+                        $data['asset_id'] = $id;
+                        $data['asset_name'] = str_replace('_', ' ', $title);
+                        $data['title'] = 'Repair Asset';
+                        $data['page'] = 'assets';
+                        $data['sub'] = true;
+                        $data['sub_breadcrumb'] = 'Assets';
+                        $data['url_sub'] = base_url('assets');
+                        $data['back_url'] = base_url('assets');
+                        $data['form_url'] = base_url('assets/status_repair/') . $id . '/' . $title;
+                    } else {
+                        $is_broken = false;
+                        $this->session->set_flashdata('alert', 'fail');
+                        if ($status == 'Lent') {
+                            $this->session->set_flashdata('msg', 'You must return the asset before repair the asset');
+                        } else {
+                            $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status to <b>Repair</b>');
+                        }
+                    }
+                }
+            }
+        } else {
+            $is_empty = true;
+        }
+
+        if ($is_empty) {
+            show_404();
+        } else {
+            if ($is_broken) {
+                $this->load->view('templates/header', $data);
+                $this->load->view('assets/form_repair', $data);
+                $this->load->view('templates/footer', $data);
+            } else {
+                redirect(base_url('assets'));
+            }
+        }
+    }
 }

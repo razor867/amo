@@ -255,9 +255,7 @@ function assetDetail(id) {
 						<br>
 						<p class="mt-4"><b>Change Status</b></p>
 						<div class="btn-group" role="group" aria-label="Basic example">
-							<a href="" type="button" class="btn btn-secondary">Broken</a>
-							<a href="" type="button" class="btn btn-secondary">Lost</a>
-							<a href="" type="button" class="btn btn-secondary">Repair</a>
+							${btn_status(data[0].id, data[0].status, data[0].name)}
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -331,4 +329,31 @@ function assetDetail(id) {
 			qrcode.makeCode(link);
 		},
 	});
+}
+
+function btn_status(id, status, title) {
+	if (status == "Ready") {
+		return `
+		<a href="${site_url}assets/status_broken/${id}" class="btn btn-secondary">Broken</a>
+		<a href="${site_url}assets/status_lost/${id}" class="btn btn-secondary">Lost</a>
+		`;
+	} else if (status == "Broken") {
+		return `
+		<a href="${site_url}assets/form_repair/${id}/${title
+			.split(" ")
+			.join("_")}" class="btn btn-secondary">Repair</a>
+		`;
+	} else if (status == "Lost") {
+		return `
+		<a href="${site_url}assets/status_unlost/${id}" class="btn btn-secondary">Unlost</a>
+		`;
+	} else {
+		return `
+		<a href="${site_url}assets/status_broken/${id}" class="btn btn-secondary">Broken</a>
+		<a href="${site_url}assets/status_lost/${id}" class="btn btn-secondary">Lost</a>
+		<a href="${site_url}assets/form_repair/${id}/${title
+			.split(" ")
+			.join("_")}"" class="btn btn-secondary">Repair</a>
+		`;
+	}
 }
