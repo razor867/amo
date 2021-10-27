@@ -322,9 +322,9 @@ class Assets extends CI_Controller
                         $data['status'] = 'Lent';
                         $data['created_at'] = date("Y-m-d H:i:s");
                         $data['created_by'] = $this->user->id;
-                        //cek apakah ada id nya di asset.
+                        //cek apakah asset sedang dipinjamkan?
                         $check_dup = $this->AssetsModel->dupLent($data['asset_id']);
-                        //kalo ada baru di save.
+                        //kalo tidak ada baru di save.
                         if ($check_dup->result()) {
                             $this->session->set_flashdata('alert', 'fail');
                             $this->session->set_flashdata('msg', 'The asset failed to lent, because this asset has not been returned');
@@ -332,7 +332,7 @@ class Assets extends CI_Controller
                         } else {
                             $title = str_replace('_', ' ', $title);
                             $this->AssetsModel->lentAsset($data);
-                            $this->AssetsModel->insert(['status' => 'Lent'], $data['asset_id']);
+                            $this->AssetsModel->insert(['status' => 'Lent', 'updated_at' => $data['created_at'], 'updated_by' => $data['updated_by']], $data['asset_id']);
                             $this->session->set_flashdata('alert', 'success');
                             $this->session->set_flashdata('msg', '<b>' . $title . '</b>' . ' successfully lent');
                             redirect(base_url('assets'));
@@ -345,7 +345,7 @@ class Assets extends CI_Controller
         }
     }
 
-    public function getDepartmentName($id)
+    private function getDepartmentName($id)
     {
         $department = $this->DepartmentModel->get($id);
         foreach ($department->result() as $r) {
@@ -424,7 +424,7 @@ class Assets extends CI_Controller
                         $this->AssetsModel->insert(['updated_at' => $data['updated_at'], 'updated_by' => $data['updated_by'], 'status' => 'Ready'], $asset_id);
 
                         $this->session->set_flashdata('alert', 'success');
-                        $this->session->set_flashdata('msg', '<b>' . $title . '</b>' . ' successfully returned');
+                        $this->session->set_flashdata('msg', '<b>' . str_replace('_', ' ', $title) . '</b>' . ' successfully returned');
                         redirect(base_url('assets'));
                     }
                 }
@@ -434,7 +434,7 @@ class Assets extends CI_Controller
         }
     }
 
-    public function status_broken($id = 0)
+    public function status_broken($id = 0, $cancel = false)
     {
         if (is_numeric($id)) {
             if (empty($id)) {
@@ -446,22 +446,32 @@ class Assets extends CI_Controller
                     $asset_name = $r->name;
                 }
 
-                if ($status == 'Ready') {
-                    $data['status'] = 'Broken';
+                if ($cancel) {
+                    $data['status'] = 'Ready';
                     $data['updated_at'] = date("Y-m-d H:i:s");
                     $data['updated_by'] = $this->user->id;
-
                     $this->AssetsModel->insert($data, $id);
                     $this->session->set_flashdata('alert', 'success');
-                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Broken</b>');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Ready</b>');
                 } else {
-                    $this->session->set_flashdata('alert', 'fail');
-                    if ($status == 'Lent') {
-                        $this->session->set_flashdata('msg', 'You must return the asset before change status to Broken');
+                    if ($status == 'Ready') {
+                        $data['status'] = 'Broken';
+                        $data['updated_at'] = date("Y-m-d H:i:s");
+                        $data['updated_by'] = $this->user->id;
+
+                        $this->AssetsModel->insert($data, $id);
+                        $this->session->set_flashdata('alert', 'success');
+                        $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Broken</b>');
                     } else {
-                        $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status to <b>Broken</b>');
+                        $this->session->set_flashdata('alert', 'fail');
+                        if ($status == 'Lent') {
+                            $this->session->set_flashdata('msg', 'You must return the asset before change status to Broken');
+                        } else {
+                            $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status to <b>Broken</b>');
+                        }
                     }
                 }
+
                 redirect(base_url('assets'));
             }
         } else {
@@ -587,6 +597,83 @@ class Assets extends CI_Controller
             } else {
                 redirect(base_url('assets'));
             }
+        }
+    }
+
+    public function status_repair($id = 0, $title = '')
+    {
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                if (empty($title)) {
+                    show_404();
+                } else {
+                    $this->load->helper(array('form'));
+
+                    $this->form_validation->set_rules('asset_id', 'Asset_id', 'required|numeric');
+                    $this->form_validation->set_rules('repair_by', 'Repair by', 'required|alpha_numeric_spaces');
+                    $this->form_validation->set_rules('start_repair', 'Date start repair', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
+                    $this->form_validation->set_rules('end_repair', 'Date end repair', array('required', 'regex_match[/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]'));
+                    $this->form_validation->set_rules('cost', 'Cost', 'required|numeric');
+                    $this->form_validation->set_rules('note_repair', 'Note repair', '');
+
+                    if ($this->form_validation->run() == FALSE) {
+                        $this->form_repair($id, $title);
+                    } else {
+                        $data['asset_id'] = $this->input->post('asset_id');
+                        $data['repair_by'] = $this->input->post('repair_by');
+                        $data['start_repair'] = $this->input->post('start_repair');
+                        $data['end_repair'] = $this->input->post('end_repair');
+                        $data['cost'] = $this->input->post('cost');
+                        $data['note_repair'] = $this->input->post('note_repair', TRUE);
+                        $data['status'] = 'On Repair';
+                        $data['created_at'] = date("Y-m-d H:i:s");
+                        $data['created_by'] = $this->user->id;
+
+                        $this->AssetsModel->status_repair($data);
+                        //update status asset
+                        $this->AssetsModel->insert(['status' => 'Repair', 'updated_at' => $data['created_at'], 'updated_by' => $data['created_by']], $data['asset_id']);
+                        $this->session->set_flashdata('alert', 'success');
+                        $this->session->set_flashdata('msg', '<b>' . str_replace('_', ' ', $title) . '</b>' . $data['status']);
+                        redirect(base_url('assets'));
+                    }
+                }
+            }
+        } else {
+            show_404();
+        }
+    }
+
+    public function status_repaired($id = 0)
+    {
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                $check_status = $this->AssetsModel->get($id);
+                foreach ($check_status->result() as $r) {
+                    $status = $r->status;
+                    $asset_name = $r->name;
+                }
+
+                if ($status == 'Repair') {
+                    $data['status'] = 'Repaired';
+                    $data['updated_at'] = date("Y-m-d H:i:s");
+                    $data['updated_by'] = $this->user->id;
+
+                    $this->AssetsModel->status_repair($data, $id);
+                    $this->AssetsModel->insert(['status' => 'Ready', 'updated_at' => $data['updated_at'], 'updated_by' => $data['updated_by']], $id);
+                    $this->session->set_flashdata('alert', 'success');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' successfully change status to <b>Ready</b>');
+                } else {
+                    $this->session->set_flashdata('alert', 'fail');
+                    $this->session->set_flashdata('msg', '<b>' . $asset_name . '</b>' . ' failed to change status');
+                }
+                redirect(base_url('assets'));
+            }
+        } else {
+            show_404();
         }
     }
 }

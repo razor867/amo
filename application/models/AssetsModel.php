@@ -63,7 +63,7 @@ class AssetsModel extends CI_Model
     {
         $this->db->select('asset_id');
         $this->db->from('lent');
-        $this->db->where(['asset_id' => $id, 'deleted_at' => NULL]);
+        $this->db->where(['asset_id' => $id, 'status' => 'Lent', 'deleted_at' => NULL]);
         $query = $this->db->get();
         return $query;
     }
@@ -92,7 +92,17 @@ class AssetsModel extends CI_Model
 
     public function return_asset($asset_id, $data)
     {
-        $this->db->where('asset_id', $asset_id);
+        $this->db->where(['asset_id' => $asset_id, 'status' => 'Lent', 'deleted_at' => NULL]);
         $this->db->update('lent', $data);
+    }
+
+    public function status_repair($data, $asset_id = 0)
+    {
+        if (empty($asset_id)) {
+            $this->db->insert('repair', $data);
+        } else {
+            $this->db->where(['asset_id' => $asset_id, 'status' => 'On Repair', 'deleted_at' => NULL]);
+            $this->db->update('repair', $data);
+        }
     }
 }

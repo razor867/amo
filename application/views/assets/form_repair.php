@@ -32,7 +32,7 @@
                     <div class="mb-3 row">
                         <label for="repair_by" class="col-sm-3 col-form-label">Repair by (Company or etc.)</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="repair_by" name="repair_by" value="<?= set_value('repair_by') ?>">
+                            <input type="text" class="form-control <?= form_error('repair_by') ? 'is-invalid' : '' ?>" id="repair_by" name="repair_by" value="<?= set_value('repair_by') ?>">
                             <div class="invalid-feedback">
                                 <?= form_error('repair_by') ?>
                             </div>

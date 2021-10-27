@@ -253,7 +253,7 @@ function assetDetail(id) {
 							data[0].status
 						)}" style="padding:7px 15px; border-radius:3px;">${data[0].status.toUpperCase()}</span>
 						<br>
-						<p class="mt-4"><b>Change Status</b></p>
+						<p class="mt-4"><b>Change Status to</b></p>
 						<div class="btn-group" role="group" aria-label="Basic example">
 							${btn_status(data[0].id, data[0].status, data[0].name)}
 						</div>
@@ -325,7 +325,7 @@ function assetDetail(id) {
 				width: 190,
 				height: 190,
 			});
-			const link = site_url;
+			const link = site_url + "scan/result_scan/" + data[0].id;
 			qrcode.makeCode(link);
 		},
 	});
@@ -339,6 +339,7 @@ function btn_status(id, status, title) {
 		`;
 	} else if (status == "Broken") {
 		return `
+		<a href="${site_url}assets/status_broken/${id}/true" class="btn btn-secondary">Cancel Broken</a>
 		<a href="${site_url}assets/form_repair/${id}/${title
 			.split(" ")
 			.join("_")}" class="btn btn-secondary">Repair</a>
@@ -346,6 +347,10 @@ function btn_status(id, status, title) {
 	} else if (status == "Lost") {
 		return `
 		<a href="${site_url}assets/status_unlost/${id}" class="btn btn-secondary">Unlost</a>
+		`;
+	} else if (status == "Repair") {
+		return `
+		<a href="${site_url}assets/status_repaired/${id}" class="btn btn-secondary">Repaired</a>
 		`;
 	} else {
 		return `
