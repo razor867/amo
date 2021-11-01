@@ -115,6 +115,10 @@
     <script src="<?= base_url('dist_web/dist/js/pages/datatable/users_data.js') ?>"></script>
 <?php endif ?>
 
+<?php if ($page == 'report') : ?>
+    <script src="<?= base_url('dist_web/dist/js/pages/datatable/report.js') ?>"></script>
+<?php endif ?>
+
 <?php if (!$sub) : ?>
     <script>
         $(document).ready(function() {

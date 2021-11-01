@@ -231,8 +231,7 @@ class Assets extends CI_Controller
                 $check = preg_match($pattern, $data[1]);
                 if (!empty($check)) {
                     $borrower_data = explode('_n_', $data[1]);
-                    $department_name = $this->getDepartmentName($borrower_data[1]);
-                    $data[1] = $department_name . ' Department on behalf of ' . $borrower_data[0];
+                    $data[1] = $borrower_data[1] . ' Department on behalf of ' . $borrower_data[0];
                 }
             } else {
                 $data[1] = '';
@@ -312,7 +311,7 @@ class Assets extends CI_Controller
                         $data['asset_id'] = $this->input->post('asset_id');
                         $data['employee_id'] = $this->input->post('employee_id');
                         if ($individualis == 'yes') {
-                            $data['department_id'] = 0;
+                            $data['department_id'] = 6;
                         } else {
                             $data['department_id'] = $this->input->post('department_id');
                         }

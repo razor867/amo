@@ -27,4 +27,20 @@ class Report extends CI_Controller
         $this->load->view('report/index', $data);
         $this->load->view('templates/footer', $data);
     }
+
+    public function listdata_lent()
+    {
+        $this->load->library("datatables");
+        $this->datatables->select("a.id, b.name as asset_name, (CASE WHEN a.department_id = 6 THEN c.name ELSE CONCAT(c.name, '_n_', d.name) END) as borrower, 
+            DATE_FORMAT(a.date_lent, '%d/%m/%Y') as date_lent, 
+            DATE_FORMAT(a.date_lent_returned, '%d/%m/%Y') as date_lent_returned, a.note_lent");
+        $this->datatables->from('lent as a');
+        $this->datatables->join('assets as b', 'a.asset_id = b.id', 'left');
+        $this->datatables->join('employee as c', 'a.employee_id = c.id', 'left');
+        $this->datatables->join('department as d', 'a.department_id = d.id', 'left');
+        $this->datatables->where('a.status', 'Lent');
+        $this->datatables->order_by('a.created_at', 'desc');
+        // $this->datatables->add_column('action', '');
+        echo $this->datatables->generate();
+    }
 }

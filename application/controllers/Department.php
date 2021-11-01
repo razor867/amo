@@ -38,7 +38,7 @@ class Department extends CI_Controller
         $this->datatables->select('department.id, department.name, department.location_id, location.name as location_name');
         $this->datatables->from('department');
         $this->datatables->join('location', 'department.location_id = location.id', 'left');
-        $this->datatables->where('department.deleted_at', NULL);
+        $this->datatables->where(['department.deleted_at' => NULL, 'department.name !=' => 'Default']);
         // $this->datatables->order_by('id', 'desc');
         $this->datatables->add_column('action', '');
         echo $this->datatables->generate();

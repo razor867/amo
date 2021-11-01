@@ -58,7 +58,9 @@
                             <select name="department_id" class="form-control <?= form_error('department_id') ? 'is-invalid' : '' ?>" id="department_id">
                                 <option value="">-- Choose Department --</option>
                                 <?php foreach ($data_department->result() as $r) : ?>
-                                    <option value="<?= $r->id ?>"><?= $r->name ?></option>
+                                    <?php if ($r->name != 'Default') : ?>
+                                        <option value="<?= $r->id ?>"><?= $r->name ?></option>
+                                    <?php endif ?>
                                 <?php endforeach ?>
                             </select>
                             <div class="invalid-feedback">

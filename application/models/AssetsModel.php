@@ -75,9 +75,10 @@ class AssetsModel extends CI_Model
 
     public function getBorrower($id)
     {
-        $this->db->select("(CASE WHEN a.department_id = 0 THEN b.name ELSE CONCAT(b.name, '_n_', a.department_id) END) as borrowers");
+        $this->db->select("(CASE WHEN a.department_id = 6 THEN CONCAT(b.name, ' (NIP : ', b.nip, ')') ELSE CONCAT(CONCAT(b.name, ' (NIP : ', b.nip, ')'), '_n_', c.name) END) as borrowers");
         $this->db->from('lent as a');
         $this->db->join('employee as b', 'a.employee_id = b.id', 'left');
+        $this->db->join('department as c', 'a.department_id = c.id', 'left');
         $this->db->where(['a.asset_id' => $id, 'a.status' => 'Lent', 'a.deleted_at' => NULL]);
         $query = $this->db->get();
         return $query;
