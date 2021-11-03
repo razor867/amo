@@ -260,7 +260,9 @@ function assetDetail(id) {
 					</div>
 					<div class="col-md-3">
 						<div id="qrcode" style="width:190px; height:190px;"></div>
-						<a href="#" class="btn btn-danger text-white mt-4">Download QR Barcode</a>
+						<a href="${
+							site_url + "assets/print_qr/" + data[0].id
+						}" target="_blank" class="btn btn-danger text-white mt-4" style="width:190px;">Download QR Code</a>
 					</div>
 				</div>
 				<div class="row mt-4">

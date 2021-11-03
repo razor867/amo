@@ -675,4 +675,25 @@ class Assets extends CI_Controller
             show_404();
         }
     }
+
+    public function print_qr($id = 0)
+    {
+        if (is_numeric($id)) {
+            if (empty($id)) {
+                show_404();
+            } else {
+                $dataAsset = $this->AssetsModel->get($id);
+
+                foreach ($dataAsset->result() as $r) {
+                    $data['asset_name'] = $r->name;
+                    $data['asset_code'] = $r->asset_code;
+                    $data['url_scan'] = site_url('scan/result_scan/') . $id;
+                }
+
+                $this->load->view('assets/print_qr.php', $data);
+            }
+        } else {
+            show_404();
+        }
+    }
 }
