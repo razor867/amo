@@ -31,15 +31,71 @@ class Report extends CI_Controller
     public function listdata_lent()
     {
         $this->load->library("datatables");
-        $this->datatables->select("a.id, b.name as asset_name, (CASE WHEN a.department_id = 6 THEN c.name ELSE CONCAT(c.name, '_n_', d.name) END) as borrower, 
-            DATE_FORMAT(a.date_lent, '%d/%m/%Y') as date_lent, 
-            DATE_FORMAT(a.date_lent_returned, '%d/%m/%Y') as date_lent_returned, a.note_lent");
-        $this->datatables->from('lent as a');
+        $this->datatables->select("id, asset_name, borrower, DATE_FORMAT(date_lent, '%d/%m/%Y') as date_lent, 
+        DATE_FORMAT(date_lent_returned, '%d/%m/%Y') as date_lent_returned, note_lent");
+        $this->datatables->from('_lent');
+        $this->datatables->where('status', 'Lent');
+        $this->datatables->order_by('created_at', 'desc');
+        // $this->datatables->add_column('action', '');
+        echo $this->datatables->generate();
+    }
+
+    public function listdata_returned()
+    {
+        $this->load->library("datatables");
+        $this->datatables->select("id, asset_name, borrower, DATE_FORMAT(date_returned, '%d/%m/%Y') as date_returned, 
+            fine, note_returned");
+        $this->datatables->from('_lent');
+        $this->datatables->where('status', 'Returned');
+        $this->datatables->order_by('created_at', 'desc');
+        // $this->datatables->add_column('action', '');
+        echo $this->datatables->generate();
+    }
+
+    public function listdata_broken()
+    {
+        $this->load->library("datatables");
+        $this->datatables->select("id, name, asset_code, serial_number, DATE_FORMAT(date_purchase, '%d/%m/%Y') as date_purchase");
+        $this->datatables->from('assets');
+        $this->datatables->where('status', 'Broken');
+        $this->datatables->order_by('created_at', 'desc');
+        // $this->datatables->add_column('action', '');
+        echo $this->datatables->generate();
+    }
+
+    public function listdata_repair()
+    {
+        $this->load->library("datatables");
+        $this->datatables->select("a.id, CONCAT(b.name, ' (', b.asset_code, ')') as asset_name, 
+            a.repair_by, DATE_FORMAT(a.start_repair, '%d/%m/%Y') as start_repair, DATE_FORMAT(a.end_repair, '%d/%m/%Y') as end_repair, a.cost, a.note_repair");
+        $this->datatables->from('repair as a');
         $this->datatables->join('assets as b', 'a.asset_id = b.id', 'left');
-        $this->datatables->join('employee as c', 'a.employee_id = c.id', 'left');
-        $this->datatables->join('department as d', 'a.department_id = d.id', 'left');
-        $this->datatables->where('a.status', 'Lent');
+        $this->datatables->where('a.status', 'On Repair');
         $this->datatables->order_by('a.created_at', 'desc');
+        // $this->datatables->add_column('action', '');
+        echo $this->datatables->generate();
+    }
+
+    public function listdata_repaired()
+    {
+        $this->load->library("datatables");
+        $this->datatables->select("a.id, CONCAT(b.name, ' (', b.asset_code, ')') as asset_name, 
+            a.repair_by, DATE_FORMAT(a.start_repair, '%d/%m/%Y') as start_repair, DATE_FORMAT(a.end_repair, '%d/%m/%Y') as end_repair, a.cost, a.note_repair");
+        $this->datatables->from('repair as a');
+        $this->datatables->join('assets as b', 'a.asset_id = b.id', 'left');
+        $this->datatables->where('a.status', 'Repaired');
+        $this->datatables->order_by('a.created_at', 'desc');
+        // $this->datatables->add_column('action', '');
+        echo $this->datatables->generate();
+    }
+
+    public function listdata_lost()
+    {
+        $this->load->library("datatables");
+        $this->datatables->select("id, name, asset_code, serial_number, DATE_FORMAT(date_purchase, '%d/%m/%Y') as date_purchase");
+        $this->datatables->from('assets');
+        $this->datatables->where('status', 'Lost');
+        $this->datatables->order_by('created_at', 'desc');
         // $this->datatables->add_column('action', '');
         echo $this->datatables->generate();
     }

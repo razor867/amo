@@ -105,6 +105,7 @@ var show_lost = true;
 function display_datatable(page) {
 	const $thead = $("thead tr th").length;
 	if (page == "lent") {
+		document.title = "Report Lent Asset";
 		if (show_lent) {
 			$("#tableLent").DataTable({
 				dom: "Bfrtip",
@@ -139,13 +140,13 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5],
 						},
-						customize: function (doc) {
-							doc.content[1].table.widths = Array(
-								doc.content[1].table.body[0].length + 1
-							)
-								.join("*")
-								.split("");
-						},
+						// customize: function (doc) {
+						// 	doc.content[1].table.widths = Array(
+						// 		doc.content[1].table.body[0].length + 1
+						// 	)
+						// 		.join("*")
+						// 		.split("");
+						// },
 					},
 					{
 						extend: "print",
@@ -200,7 +201,7 @@ function display_datatable(page) {
 						targets: [4],
 					},
 					{
-						className: "wrap-max-20 dt-nowrap",
+						className: "wrap-max-20",
 						targets: [5],
 					},
 				],
@@ -243,16 +244,688 @@ function display_datatable(page) {
 		}
 		show_lent = false;
 	} else if (page == "returned") {
-		$("#tableReturned").DataTable();
+		document.title = "Report Returned Asset";
+		if (show_returned) {
+			$("#tableReturned").DataTable({
+				dom: "Bfrtip",
+				buttons: [
+					{
+						extend: "copy",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5],
+						},
+					},
+					{
+						extend: "csv",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5],
+						},
+					},
+					{
+						extend: "excel",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5],
+						},
+					},
+					{
+						extend: "pdf",
+						className: "btn btn-secondary btn-sm",
+						// orientation: "landscape",
+						pageSize: "A4",
+						// alignment: "center",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5],
+						},
+						// customize: function (doc) {
+						// 	doc.content[1].table.widths = Array(
+						// 		doc.content[1].table.body[0].length + 1
+						// 	)
+						// 		.join("*")
+						// 		.split("");
+						// },
+					},
+					{
+						extend: "print",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5],
+						},
+					},
+				],
+				processing: true,
+				oLanguage: {
+					// sLengthMenu: "Tampilkan _MENU_ data per halaman",
+					// sSearch: "Pencarian: ",
+					// sZeroRecords: "Maaf, tidak ada data yang ditemukan",
+					// sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+					// sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+					// sInfoFiltered: "(di filter dari _MAX_ total data)",
+					// oPaginate: {
+					//   sFirst: "<<",
+					//   slast: ">>",
+					//   sPrevious: "<",
+					//   sNext: ">",
+					// },
+				},
+				language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Search...",
+				},
+				columnDefs: [
+					{
+						orderable: false,
+						targets: $thead == 5 ? [] : [5],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [0],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [1],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [2],
+					},
+					{
+						className: "wrap-max-15",
+						targets: [3],
+					},
+					{
+						className: "wrap-max-15",
+						targets: [4],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [5],
+					},
+				],
+				// ordering: true,
+				// info: true,
+				serverSide: true,
+				responsive: true,
+				// stateSave: true,
+				scrollX: true,
+				ajax: {
+					url: site_url + "report/listdata_returned",
+					type: "post",
+					error: function (e) {
+						console.log("data tidak ditemukan di server");
+					},
+					// success: function (data) {
+					//   console.log(data);
+					// },
+				},
+				columns: [
+					{
+						data: "id",
+						render: function (data, type, row, meta) {
+							return meta.row + meta.settings._iDisplayStart + 1;
+						},
+					},
+					{ data: "asset_name" },
+					{ data: "borrower" },
+					// {
+					// 	data: "borrower",
+					// 	render: (data, type, row) => {
+					// 		return get_Department(row.borrower);
+					// 	},
+					// },
+					{ data: "date_returned" },
+					{ data: "fine" },
+					{ data: "note_returned" },
+				],
+			});
+		}
+		show_returned = false;
 	} else if (page == "broken") {
-		$("#tableBroken").DataTable();
+		document.title = "Report Broken Asset";
+		if (show_broken) {
+			$("#tableBroken").DataTable({
+				dom: "Bfrtip",
+				buttons: [
+					{
+						extend: "copy",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+					{
+						extend: "csv",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+					{
+						extend: "excel",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+					{
+						extend: "pdf",
+						// extend: "pdfHtml5",
+						className: "btn btn-secondary btn-sm",
+						// orientation: "landscape",
+						pageSize: "A4",
+						// alignment: "center",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+						// customize: function (doc) {
+						// 	doc.content[1].table.widths = Array(
+						// 		doc.content[1].table.body[0].length + 1
+						// 	)
+						// 		.join("*")
+						// 		.split("");
+						// },
+					},
+					{
+						extend: "print",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+				],
+				processing: true,
+				oLanguage: {
+					// sLengthMenu: "Tampilkan _MENU_ data per halaman",
+					// sSearch: "Pencarian: ",
+					// sZeroRecords: "Maaf, tidak ada data yang ditemukan",
+					// sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+					// sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+					// sInfoFiltered: "(di filter dari _MAX_ total data)",
+					// oPaginate: {
+					//   sFirst: "<<",
+					//   slast: ">>",
+					//   sPrevious: "<",
+					//   sNext: ">",
+					// },
+				},
+				language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Search...",
+				},
+				columnDefs: [
+					{
+						orderable: false,
+						targets: $thead == 4 ? [] : [4],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [0],
+					},
+					{
+						className: "wrap-max-30",
+						targets: [1],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [2],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [3],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [4],
+					},
+				],
+				// ordering: true,
+				// info: true,
+				serverSide: true,
+				responsive: true,
+				// stateSave: true,
+				scrollX: true,
+				ajax: {
+					url: site_url + "report/listdata_broken",
+					type: "post",
+					error: function (e) {
+						console.log("data tidak ditemukan di server");
+					},
+					// success: function (data) {
+					//   console.log(data);
+					// },
+				},
+				columns: [
+					{
+						data: "id",
+						render: function (data, type, row, meta) {
+							return meta.row + meta.settings._iDisplayStart + 1;
+						},
+					},
+					{ data: "name" },
+					{ data: "asset_code" },
+					// {
+					// 	data: "borrower",
+					// 	render: (data, type, row) => {
+					// 		return get_Department(row.borrower);
+					// 	},
+					// },
+					{ data: "serial_number" },
+					{ data: "date_purchase" },
+				],
+			});
+		}
+		show_broken = false;
 	} else if (page == "repair") {
-		$("#tableRepair").DataTable();
+		document.title = "Report Repair Asset";
+		if (show_repair) {
+			$("#tableRepair").DataTable({
+				dom: "Bfrtip",
+				buttons: [
+					{
+						extend: "copy",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+					{
+						extend: "csv",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+					{
+						extend: "excel",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+					{
+						extend: "pdf",
+						className: "btn btn-secondary btn-sm",
+						// orientation: "landscape",
+						pageSize: "A4",
+						// alignment: "center",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+						// customize: function (doc) {
+						// 	doc.content[1].table.widths = Array(
+						// 		doc.content[1].table.body[0].length + 1
+						// 	)
+						// 		.join("*")
+						// 		.split("");
+						// },
+					},
+					{
+						extend: "print",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+				],
+				processing: true,
+				oLanguage: {
+					// sLengthMenu: "Tampilkan _MENU_ data per halaman",
+					// sSearch: "Pencarian: ",
+					// sZeroRecords: "Maaf, tidak ada data yang ditemukan",
+					// sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+					// sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+					// sInfoFiltered: "(di filter dari _MAX_ total data)",
+					// oPaginate: {
+					//   sFirst: "<<",
+					//   slast: ">>",
+					//   sPrevious: "<",
+					//   sNext: ">",
+					// },
+				},
+				language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Search...",
+				},
+				columnDefs: [
+					{
+						orderable: false,
+						targets: $thead == 4 ? [] : [4],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [0],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [1],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [2],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [3],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [4],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [5],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [6],
+					},
+				],
+				// ordering: true,
+				// info: true,
+				serverSide: true,
+				responsive: true,
+				// stateSave: true,
+				scrollX: true,
+				ajax: {
+					url: site_url + "report/listdata_repair",
+					type: "post",
+					error: function (e) {
+						console.log("data tidak ditemukan di server");
+					},
+					// success: function (data) {
+					//   console.log(data);
+					// },
+				},
+				columns: [
+					{
+						data: "id",
+						render: function (data, type, row, meta) {
+							return meta.row + meta.settings._iDisplayStart + 1;
+						},
+					},
+					{ data: "asset_name" },
+					{ data: "repair_by" },
+					{ data: "start_repair" },
+					{ data: "end_repair" },
+					{ data: "cost" },
+					{ data: "note_repair" },
+				],
+			});
+		}
+		show_repair = false;
 	} else if (page == "repaired") {
-		$("#tableRepaired").DataTable();
-	} else {
-		$("#tableLost").DataTable();
+		document.title = "Report Repaired Asset";
+		if (show_repaired) {
+			$("#tableRepaired").DataTable({
+				dom: "Bfrtip",
+				buttons: [
+					{
+						extend: "copy",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+					{
+						extend: "csv",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+					{
+						extend: "excel",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+					{
+						extend: "pdf",
+						className: "btn btn-secondary btn-sm",
+						// orientation: "landscape",
+						pageSize: "A4",
+						// alignment: "center",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+						// customize: function (doc) {
+						// 	doc.content[1].table.widths = Array(
+						// 		doc.content[1].table.body[0].length + 1
+						// 	)
+						// 		.join("*")
+						// 		.split("");
+						// },
+					},
+					{
+						extend: "print",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6],
+						},
+					},
+				],
+				processing: true,
+				oLanguage: {
+					// sLengthMenu: "Tampilkan _MENU_ data per halaman",
+					// sSearch: "Pencarian: ",
+					// sZeroRecords: "Maaf, tidak ada data yang ditemukan",
+					// sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+					// sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+					// sInfoFiltered: "(di filter dari _MAX_ total data)",
+					// oPaginate: {
+					//   sFirst: "<<",
+					//   slast: ">>",
+					//   sPrevious: "<",
+					//   sNext: ">",
+					// },
+				},
+				language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Search...",
+				},
+				columnDefs: [
+					{
+						orderable: false,
+						targets: $thead == 4 ? [] : [4],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [0],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [1],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [2],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [3],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [4],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [5],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [6],
+					},
+				],
+				// ordering: true,
+				// info: true,
+				serverSide: true,
+				responsive: true,
+				// stateSave: true,
+				scrollX: true,
+				ajax: {
+					url: site_url + "report/listdata_repaired",
+					type: "post",
+					error: function (e) {
+						console.log("data tidak ditemukan di server");
+					},
+					// success: function (data) {
+					//   console.log(data);
+					// },
+				},
+				columns: [
+					{
+						data: "id",
+						render: function (data, type, row, meta) {
+							return meta.row + meta.settings._iDisplayStart + 1;
+						},
+					},
+					{ data: "asset_name" },
+					{ data: "repair_by" },
+					{ data: "start_repair" },
+					{ data: "end_repair" },
+					{ data: "cost" },
+					{ data: "note_repair" },
+				],
+			});
+		}
+		show_repaired = false;
+	} else if (page == "lost") {
+		document.title = "Report Lost Asset";
+		if (show_lost) {
+			$("#tableLost").DataTable({
+				dom: "Bfrtip",
+				buttons: [
+					{
+						extend: "copy",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+					{
+						extend: "csv",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+					{
+						extend: "excel",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+					{
+						extend: "pdf",
+						className: "btn btn-secondary btn-sm",
+						// orientation: "landscape",
+						pageSize: "A4",
+						// alignment: "center",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+						// customize: function (doc) {
+						// 	doc.content[1].table.widths = Array(
+						// 		doc.content[1].table.body[0].length + 1
+						// 	)
+						// 		.join("*")
+						// 		.split("");
+						// },
+					},
+					{
+						extend: "print",
+						className: "btn btn-secondary btn-sm",
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4],
+						},
+					},
+				],
+				processing: true,
+				oLanguage: {
+					// sLengthMenu: "Tampilkan _MENU_ data per halaman",
+					// sSearch: "Pencarian: ",
+					// sZeroRecords: "Maaf, tidak ada data yang ditemukan",
+					// sInfo: "Menampilkan _START_ s/d _END_ dari _TOTAL_ data",
+					// sInfoEmpty: "Menampilkan 0 s/d 0 dari 0 data",
+					// sInfoFiltered: "(di filter dari _MAX_ total data)",
+					// oPaginate: {
+					//   sFirst: "<<",
+					//   slast: ">>",
+					//   sPrevious: "<",
+					//   sNext: ">",
+					// },
+				},
+				language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Search...",
+				},
+				columnDefs: [
+					{
+						orderable: false,
+						targets: $thead == 4 ? [] : [4],
+					},
+					{
+						className: "wrap-max-10",
+						targets: [0],
+					},
+					{
+						className: "wrap-max-30",
+						targets: [1],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [2],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [3],
+					},
+					{
+						className: "wrap-max-20",
+						targets: [4],
+					},
+				],
+				// ordering: true,
+				// info: true,
+				serverSide: true,
+				responsive: true,
+				// stateSave: true,
+				scrollX: true,
+				ajax: {
+					url: site_url + "report/listdata_lost",
+					type: "post",
+					error: function (e) {
+						console.log("data tidak ditemukan di server");
+					},
+					// success: function (data) {
+					//   console.log(data);
+					// },
+				},
+				columns: [
+					{
+						data: "id",
+						render: function (data, type, row, meta) {
+							return meta.row + meta.settings._iDisplayStart + 1;
+						},
+					},
+					{ data: "name" },
+					{ data: "asset_code" },
+					// {
+					// 	data: "borrower",
+					// 	render: (data, type, row) => {
+					// 		return get_Department(row.borrower);
+					// 	},
+					// },
+					{ data: "serial_number" },
+					{ data: "date_purchase" },
+				],
+			});
+		}
+		show_lost = false;
 	}
 }
-
-function get_Department($data) {}

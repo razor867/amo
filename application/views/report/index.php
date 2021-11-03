@@ -85,7 +85,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Asset Name</th>
-                                <th>Aseet Code</th>
+                                <th>Asset Code</th>
                                 <th>Serial Number</th>
                                 <th>Date Purchase</th>
                             </tr>
@@ -158,7 +158,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Asset Name</th>
-                                <th>Aseet Code</th>
+                                <th>Asset Code</th>
                                 <th>Serial Number</th>
                                 <th>Date Purchase</th>
                             </tr>
