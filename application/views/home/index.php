@@ -2,19 +2,125 @@
 <!-- Sales chart -->
 <!-- ============================================================== -->
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col">
+        <div class="card card-dashboard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="btn btn-primary btn-circle d-flex align-items-center" style="width: 50px; height:50px">
+                            <i class="mdi mdi-dropbox fs-1"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="font-weight: 700;">Total Assets</h5>
+                        <h5><?= $total_asset ?></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card card-dashboard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="btn btn-primary btn-circle d-flex align-items-center" style="width: 50px; height:50px">
+                            <i class="mdi mdi-arrow-expand fs-1"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="font-weight: 700;">LentAssets</h5>
+                        <h5><?= $total_asset_lent ?></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card card-dashboard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="btn btn-primary btn-circle d-flex align-items-center" style="width: 50px; height:50px">
+                            <i class="mdi mdi-arrow-compress fs-1"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="font-weight: 700;">Returned Assets</h5>
+                        <h5><?= $total_asset_returned ?></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="card card-dashboard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="btn btn-primary btn-circle d-flex align-items-center" style="width: 50px; height:50px">
+                            <i class="mdi mdi-image-broken fs-1"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="font-weight: 700;">Broken Assets</h5>
+                        <h5><?= $total_asset_broken ?></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card card-dashboard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="btn btn-primary btn-circle d-flex align-items-center" style="width: 50px; height:50px">
+                            <i class="mdi mdi-clock-fast fs-1"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="font-weight: 700;">Repair Assets</h5>
+                        <h5><?= $total_asset_repair ?></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card card-dashboard">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span class="btn btn-primary btn-circle d-flex align-items-center" style="width: 50px; height:50px">
+                            <i class="mdi mdi-settings fs-1"></i>
+                        </span>
+                    </div>
+                    <div class="col-md-9">
+                        <h5 style="font-weight: 700;">Lost Assets</h5>
+                        <h5><?= $total_asset_lost ?></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
                 <div class="d-md-flex align-items-center">
                     <div>
-                        <h4 class="card-title">Sales Summary</h4>
-                        <h6 class="card-subtitle">Ample admin Vs Pixel admin</h6>
+                        <h4 class="card-title">Summary in <?= date("Y") ?></h4>
+                        <h6 class="card-subtitle">Lent Asset Vs Returned Asset</h6>
                     </div>
                     <div class="ms-auto d-flex no-block align-items-center">
+                        <li class="list-inline-item d-flex align-items-center text-primary"><i class="fa fa-circle font-10 me-1"></i> Lent
+                        </li>
                         <ul class="list-inline dl d-flex align-items-center m-r-15 m-b-0">
-                            <li class="list-inline-item d-flex align-items-center text-info"><i class="fa fa-circle font-10 me-1"></i> Ample
-                            </li>
-                            <li class="list-inline-item d-flex align-items-center text-primary"><i class="fa fa-circle font-10 me-1"></i> Pixel
+                            <li class="list-inline-item d-flex align-items-center text-info"><i class="fa fa-circle font-10 me-1"></i> Returned
                             </li>
                         </ul>
                     </div>
@@ -22,75 +128,10 @@
                 <div class="amp-pxl mt-4" style="height: 350px;">
                     <div class="chartist-tooltip"></div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Weekly Stats</h4>
-                <h6 class="card-subtitle">Average sales</h6>
-                <div class="mt-5 pb-3 d-flex align-items-center">
-                    <span class="btn btn-primary btn-circle d-flex align-items-center">
-                        <i class="mdi mdi-cart-outline fs-4"></i>
-                    </span>
-                    <div class="ms-3">
-                        <h5 class="mb-0 fw-bold">Top Sales</h5>
-                        <span class="text-muted fs-6">Johnathan Doe</span>
-                    </div>
-                    <div class="ms-auto">
-                        <span class="badge bg-light text-muted">+68%</span>
-                    </div>
-                </div>
-                <div class="py-3 d-flex align-items-center">
-                    <span class="btn btn-warning btn-circle d-flex align-items-center">
-                        <i class="mdi mdi-star-circle fs-4"></i>
-                    </span>
-                    <div class="ms-3">
-                        <h5 class="mb-0 fw-bold">Best Seller</h5>
-                        <span class="text-muted fs-6">MaterialPro Admin</span>
-                    </div>
-                    <div class="ms-auto">
-                        <span class="badge bg-light text-muted">+68%</span>
-                    </div>
-                </div>
-                <div class="py-3 d-flex align-items-center">
-                    <span class="btn btn-success btn-circle d-flex align-items-center">
-                        <i class="mdi mdi-comment-multiple-outline text-white fs-4"></i>
-                    </span>
-                    <div class="ms-3">
-                        <h5 class="mb-0 fw-bold">Most Commented</h5>
-                        <span class="text-muted fs-6">Ample Admin</span>
-                    </div>
-                    <div class="ms-auto">
-                        <span class="badge bg-light text-muted">+68%</span>
-                    </div>
-                </div>
-                <div class="py-3 d-flex align-items-center">
-                    <span class="btn btn-info btn-circle d-flex align-items-center">
-                        <i class="mdi mdi-diamond fs-4 text-white"></i>
-                    </span>
-                    <div class="ms-3">
-                        <h5 class="mb-0 fw-bold">Top Budgets</h5>
-                        <span class="text-muted fs-6">Sunil Joshi</span>
-                    </div>
-                    <div class="ms-auto">
-                        <span class="badge bg-light text-muted">+15%</span>
-                    </div>
-                </div>
-
-                <div class="pt-3 d-flex align-items-center">
-                    <span class="btn btn-danger btn-circle d-flex align-items-center">
-                        <i class="mdi mdi-content-duplicate fs-4 text-white"></i>
-                    </span>
-                    <div class="ms-3">
-                        <h5 class="mb-0 fw-bold">Best Designer</h5>
-                        <span class="text-muted fs-6">Nirav Joshi</span>
-                    </div>
-                    <div class="ms-auto">
-                        <span class="badge bg-light text-muted">+90%</span>
-                    </div>
-                </div>
+                <script>
+                    const dataLent = <?php echo json_encode($dataLent) ?>;
+                    const dataReturned = <?php echo json_encode($dataReturned) ?>;
+                </script>
             </div>
         </div>
     </div>
@@ -101,12 +142,10 @@
 <!-- ============================================================== -->
 <!-- Table -->
 <!-- ============================================================== -->
-<div class="row">
-    <!-- column -->
+<!-- <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <!-- title -->
                 <div class="d-md-flex">
                     <div>
                         <h4 class="card-title">Top Selling Products</h4>
@@ -123,7 +162,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- title -->
                 <div class="table-responsive">
                     <table class="table mb-0 table-hover align-middle text-nowrap">
                         <thead>
@@ -228,22 +266,20 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <!-- ============================================================== -->
 <!-- Table -->
 <!-- ============================================================== -->
 <!-- ============================================================== -->
 <!-- Recent comment and chats -->
 <!-- ============================================================== -->
-<div class="row">
-    <!-- column -->
+<!-- <div class="row">
     <div class="col-lg-6">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Recent Comments</h4>
             </div>
             <div class="comment-widgets scrollable">
-                <!-- Comment Row -->
                 <div class="d-flex flex-row comment-row m-t-0">
                     <div class="p-2"><img src="<?= base_url('assets/images/users/1.jpg') ?>" alt="user" width="50" class="rounded-circle"></div>
                     <div class="comment-text w-100">
@@ -259,7 +295,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Comment Row -->
                 <div class="d-flex flex-row comment-row">
                     <div class="p-2"><img src="<?= base_url('assets/images/users/4.jpg') ?>" alt="user" width="50" class="rounded-circle"></div>
                     <div class="comment-text active w-100">
@@ -277,7 +312,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Comment Row -->
                 <div class="d-flex flex-row comment-row">
                     <div class="p-2"><img src="<?= base_url('assets/images/users/5.jpg') ?>" alt="user" width="50" class="rounded-circle"></div>
                     <div class="comment-text w-100">
@@ -298,7 +332,6 @@
             </div>
         </div>
     </div>
-    <!-- column -->
     <div class="col-lg-6">
         <div class="card">
             <div class="card-body">
@@ -356,7 +389,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <!-- ============================================================== -->
 <!-- Recent comment and chats -->
 <!-- ============================================================== -->

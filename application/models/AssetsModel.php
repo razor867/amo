@@ -106,4 +106,61 @@ class AssetsModel extends CI_Model
             $this->db->update('repair', $data);
         }
     }
+
+    public function total_asset()
+    {
+        $this->db->select('COUNT(*) as total_asset');
+        $this->db->where(['deleted_at' => NULL]);
+        $query = $this->db->get('assets')->result_array();
+        return $query;
+    }
+
+    public function total_lent()
+    {
+        $this->db->select('COUNT(*) as total_lent');
+        $this->db->where(['deleted_at' => NULL, 'status' => 'Lent', 'YEAR(created_at)' => date('Y')]);
+        $query = $this->db->get('lent')->result_array();
+        return $query;
+    }
+
+    public function total_returned()
+    {
+        $this->db->select('COUNT(*) as total_returned');
+        $this->db->where(['deleted_at' => NULL, 'status' => 'Returned', 'YEAR(created_at)' => date('Y')]);
+        $query = $this->db->get('lent')->result_array();
+        return $query;
+    }
+
+    public function total_broken()
+    {
+        $this->db->select('COUNT(*) as total_broken');
+        $this->db->where(['deleted_at' => NULL, 'status' => 'Broken']);
+        $query = $this->db->get('assets')->result_array();
+        return $query;
+    }
+
+    public function total_repair()
+    {
+        $this->db->select('COUNT(*) as total_repair');
+        $this->db->where(['deleted_at' => NULL, 'status' => 'On Repair']);
+        $query = $this->db->get('repair')->result_array();
+        return $query;
+    }
+
+    public function total_lost()
+    {
+        $this->db->select('COUNT(*) as total_lost');
+        $this->db->where(['deleted_at' => NULL, 'status' => 'Lost']);
+        $query = $this->db->get('assets')->result_array();
+        return $query;
+    }
+
+    public function getLentByCurrentYear()
+    {
+        // get lent and returned by current year
+        $this->db->select('id, created_at, status');
+        $this->db->where(['deleted_at' => NULL, 'YEAR(created_at)' => date('Y')]);
+        $query = $this->db->get('lent');
+        return $query;
+    }
 }

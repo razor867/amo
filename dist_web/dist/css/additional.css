@@ -8,3 +8,6 @@
 .table_detail th {
 	padding: 5px;
 }
+.card.card-dashboard:hover {
+	background-color: #dbdfdd;
+}
