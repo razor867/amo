@@ -89,7 +89,7 @@
                 <!-- toggle and nav items -->
                 <!-- ============================================================== -->
                 <div class="navbar-nav float-start me-auto" style="display: block;margin-top:10px;z-index:1">
-                    <span>
+                    <span class="detail_pt">
                         <h4 style="margin-left: 30px;margin-right:30px;">PT EDMI MANUFACTURING INDONESIA</h4>
                         <small style="margin-left: 30px;margin-right:30px;">EDMI Limited is one of the leading Smart Energy Solutions providers in the world</small>
                     </span>

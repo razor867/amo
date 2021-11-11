@@ -11,3 +11,9 @@
 .card.card-dashboard:hover {
 	background-color: #dbdfdd;
 }
+
+@media only screen and (max-width: 600px) {
+  span.detail_pt {
+      display: none;
+  }
+}
