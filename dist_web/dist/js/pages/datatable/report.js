@@ -95,6 +95,25 @@ function reset_card() {
 	lost_card.classList.add("d-none");
 }
 
+/* Fungsi formatRupiah */
+function formatRupiah(angka, prefix) {
+	var number_string = angka.replace(/[^,\d]/g, "").toString(),
+		split = number_string.split(","),
+		sisa = split[0].length % 3,
+		rupiah = split[0].substr(0, sisa),
+		ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+	// tambahkan titik jika yang di input sudah menjadi angka ribuan
+	if (ribuan) {
+		separator = sisa ? "." : "";
+		rupiah += separator + ribuan.join(".");
+	}
+
+	rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+	return prefix + rupiah;
+	// return prefix == undefined ? rupiah : rupiah ? "Rp. " + rupiah : "";
+}
+
 var show_lent = true;
 var show_returned = true;
 var show_broken = true;
@@ -255,6 +274,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5],
 						},
+						footer: true,
 					},
 					{
 						extend: "csv",
@@ -262,6 +282,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5],
 						},
+						footer: true,
 					},
 					{
 						extend: "excel",
@@ -269,6 +290,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5],
 						},
+						footer: true,
 					},
 					{
 						extend: "pdf",
@@ -279,6 +301,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5],
 						},
+						footer: true,
 						// customize: function (doc) {
 						// 	doc.content[1].table.widths = Array(
 						// 		doc.content[1].table.body[0].length + 1
@@ -293,6 +316,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5],
 						},
+						footer: true,
 					},
 				],
 				processing: true,
@@ -360,6 +384,41 @@ function display_datatable(page) {
 					//   console.log(data);
 					// },
 				},
+				footerCallback: function (row, data, start, end, display) {
+					var api = this.api(),
+						data;
+
+					// Remove the formatting to get integer data for summation
+					var intVal = function (i) {
+						return typeof i === "string"
+							? i.replace(/[\$,]/g, "") * 1
+							: typeof i === "number"
+							? i
+							: 0;
+					};
+
+					// Total over all pages
+					total = api
+						.column(4)
+						.data()
+						.reduce(function (a, b) {
+							return intVal(a) + intVal(b);
+						}, 0);
+
+					// Total over this page
+					pageTotal = api
+						.column(4, { page: "current" })
+						.data()
+						.reduce(function (a, b) {
+							return intVal(a) + intVal(b);
+						}, 0);
+
+					// Update footer
+					// $(api.column(5).footer()).html(
+					// 	"$" + pageTotal + " ( $" + total + " total)"
+					// );
+					$(api.column(4).footer()).html(formatRupiah(total.toString(), "Rp"));
+				},
 				columns: [
 					{
 						data: "id",
@@ -376,7 +435,12 @@ function display_datatable(page) {
 					// 	},
 					// },
 					{ data: "date_returned" },
-					{ data: "fine" },
+					{
+						data: "fine",
+						render: (data, type, row) => {
+							return formatRupiah(row.fine, "Rp");
+						},
+					},
 					{ data: "note_returned" },
 				],
 			});
@@ -529,6 +593,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 					{
 						extend: "csv",
@@ -536,6 +601,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 					{
 						extend: "excel",
@@ -543,6 +609,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 					{
 						extend: "pdf",
@@ -553,6 +620,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 						// customize: function (doc) {
 						// 	doc.content[1].table.widths = Array(
 						// 		doc.content[1].table.body[0].length + 1
@@ -567,6 +635,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 				],
 				processing: true,
@@ -638,6 +707,41 @@ function display_datatable(page) {
 					//   console.log(data);
 					// },
 				},
+				footerCallback: function (row, data, start, end, display) {
+					var api = this.api(),
+						data;
+
+					// Remove the formatting to get integer data for summation
+					var intVal = function (i) {
+						return typeof i === "string"
+							? i.replace(/[\$,]/g, "") * 1
+							: typeof i === "number"
+							? i
+							: 0;
+					};
+
+					// Total over all pages
+					total = api
+						.column(5)
+						.data()
+						.reduce(function (a, b) {
+							return intVal(a) + intVal(b);
+						}, 0);
+
+					// Total over this page
+					pageTotal = api
+						.column(5, { page: "current" })
+						.data()
+						.reduce(function (a, b) {
+							return intVal(a) + intVal(b);
+						}, 0);
+
+					// Update footer
+					// $(api.column(5).footer()).html(
+					// 	"$" + pageTotal + " ( $" + total + " total)"
+					// );
+					$(api.column(5).footer()).html(formatRupiah(total.toString(), "Rp"));
+				},
 				columns: [
 					{
 						data: "id",
@@ -649,7 +753,12 @@ function display_datatable(page) {
 					{ data: "repair_by" },
 					{ data: "start_repair" },
 					{ data: "end_repair" },
-					{ data: "cost" },
+					{
+						data: "cost",
+						render: (data, type, row) => {
+							return formatRupiah(row.cost, "Rp");
+						},
+					},
 					{ data: "note_repair" },
 				],
 			});
@@ -667,6 +776,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 					{
 						extend: "csv",
@@ -674,6 +784,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 					{
 						extend: "excel",
@@ -681,6 +792,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 					{
 						extend: "pdf",
@@ -691,6 +803,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 						// customize: function (doc) {
 						// 	doc.content[1].table.widths = Array(
 						// 		doc.content[1].table.body[0].length + 1
@@ -705,6 +818,7 @@ function display_datatable(page) {
 						exportOptions: {
 							columns: [0, 1, 2, 3, 4, 5, 6],
 						},
+						footer: true,
 					},
 				],
 				processing: true,
@@ -776,6 +890,41 @@ function display_datatable(page) {
 					//   console.log(data);
 					// },
 				},
+				footerCallback: function (row, data, start, end, display) {
+					var api = this.api(),
+						data;
+
+					// Remove the formatting to get integer data for summation
+					var intVal = function (i) {
+						return typeof i === "string"
+							? i.replace(/[\$,]/g, "") * 1
+							: typeof i === "number"
+							? i
+							: 0;
+					};
+
+					// Total over all pages
+					total = api
+						.column(5)
+						.data()
+						.reduce(function (a, b) {
+							return intVal(a) + intVal(b);
+						}, 0);
+
+					// Total over this page
+					pageTotal = api
+						.column(5, { page: "current" })
+						.data()
+						.reduce(function (a, b) {
+							return intVal(a) + intVal(b);
+						}, 0);
+
+					// Update footer
+					// $(api.column(5).footer()).html(
+					// 	"$" + pageTotal + " ( $" + total + " total)"
+					// );
+					$(api.column(5).footer()).html(formatRupiah(total.toString(), "Rp"));
+				},
 				columns: [
 					{
 						data: "id",
@@ -787,7 +936,12 @@ function display_datatable(page) {
 					{ data: "repair_by" },
 					{ data: "start_repair" },
 					{ data: "end_repair" },
-					{ data: "cost" },
+					{
+						data: "cost",
+						render: (data, type, row) => {
+							return formatRupiah(row.cost, "Rp");
+						},
+					},
 					{ data: "note_repair" },
 				],
 			});

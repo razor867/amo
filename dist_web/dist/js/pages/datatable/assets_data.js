@@ -11,6 +11,7 @@ $(document).ready(function () {
 				exportOptions: {
 					columns: [0, 2, 3, 4, 5, 6],
 				},
+				footer: true,
 			},
 			{
 				extend: "csv",
@@ -18,6 +19,7 @@ $(document).ready(function () {
 				exportOptions: {
 					columns: [0, 2, 3, 4, 5, 6],
 				},
+				footer: true,
 			},
 			{
 				extend: "excel",
@@ -25,6 +27,7 @@ $(document).ready(function () {
 				exportOptions: {
 					columns: [0, 2, 3, 4, 5, 6],
 				},
+				footer: true,
 			},
 			{
 				extend: "pdf",
@@ -35,6 +38,7 @@ $(document).ready(function () {
 				exportOptions: {
 					columns: [0, 2, 3, 4, 5, 6],
 				},
+				footer: true,
 				// customize: function (doc) {
 				// 	doc.content[1].table.widths = Array(
 				// 		doc.content[1].table.body[0].length + 1
@@ -53,6 +57,7 @@ $(document).ready(function () {
 				exportOptions: {
 					columns: [0, 2, 3, 4, 5, 6],
 				},
+				footer: true,
 			},
 		],
 		processing: true,
@@ -131,6 +136,41 @@ $(document).ready(function () {
 			// success: function (data) {
 			// 	console.log(data);
 			// },
+		},
+		footerCallback: function (row, data, start, end, display) {
+			var api = this.api(),
+				data;
+
+			// Remove the formatting to get integer data for summation
+			var intVal = function (i) {
+				return typeof i === "string"
+					? i.replace(/[\$,]/g, "") * 1
+					: typeof i === "number"
+					? i
+					: 0;
+			};
+
+			// Total over all pages
+			total = api
+				.column(5)
+				.data()
+				.reduce(function (a, b) {
+					return intVal(a) + intVal(b);
+				}, 0);
+
+			// Total over this page
+			pageTotal = api
+				.column(5, { page: "current" })
+				.data()
+				.reduce(function (a, b) {
+					return intVal(a) + intVal(b);
+				}, 0);
+
+			// Update footer
+			// $(api.column(5).footer()).html(
+			// 	"$" + pageTotal + " ( $" + total + " total)"
+			// );
+			$(api.column(5).footer()).html(formatRupiah(total.toString(), "Rp"));
 		},
 		columns: [
 			{
