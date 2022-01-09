@@ -41,15 +41,17 @@ class Home extends CI_Controller
         $data['total_asset_lost'] = $total_lost[0]['total_lost'];
 
         $getLentAndReturned = $this->AssetsModel->getLentByCurrentYear();
+        $lent = [];
+        $returned = [];
         foreach ($getLentAndReturned->result() as $r) {
             if ($r->status == 'Lent') {
-                $lent[] = $r->created_at;
+                $lent[] = $r->updated_at;
             } else {
-                $returned[] = $r->created_at;
+                $returned[] = $r->updated_at;
             }
         }
-        $data['dataLent'] = $lent;
-        $data['dataReturned'] = $returned;
+        $data['dataLent'] = count($lent) != 0 ? $lent : null;
+        $data['dataReturned'] = count($returned) != 0 ? $returned : null;
 
         $this->load->view('templates/header', $data);
         $this->load->view('home/index', $data);

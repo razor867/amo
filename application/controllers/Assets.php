@@ -320,6 +320,7 @@ class Assets extends CI_Controller
                         $data['date_lent_returned'] = $this->input->post('date_lent_returned');
                         $data['status'] = 'Lent';
                         $data['created_at'] = date("Y-m-d H:i:s");
+                        $data['updated_at'] = date("Y-m-d H:i:s");
                         $data['created_by'] = $this->user->id;
                         //cek apakah asset sedang dipinjamkan?
                         $check_dup = $this->AssetsModel->dupLent($data['asset_id']);

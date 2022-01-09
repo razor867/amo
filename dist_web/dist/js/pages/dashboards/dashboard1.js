@@ -37,68 +37,70 @@ $(function () {
 	// Newsletter
 	// ==============================================================
 
-	for (let i = 0; i < dataLent.length; i++) {
-		const d = new Date();
-		let month = dataLent[i].split("-");
-		month = month[1];
-		if (month == "01") {
-			lentJanuary.push(dataLent[i]);
-		} else if (month == "02") {
-			lentFebruary.push(dataLent[i]);
-		} else if (month == "03") {
-			lentMarch.push(dataLent[i]);
-		} else if (month == "04") {
-			lentApril.push(dataLent[i]);
-		} else if (month == "05") {
-			lentMay.push(dataLent[i]);
-		} else if (month == "06") {
-			lentJune.push(dataLent[i]);
-		} else if (month == "07") {
-			lentJuly.push(dataLent[i]);
-		} else if (month == "08") {
-			lentAugust.push(dataLent[i]);
-		} else if (month == "09") {
-			lentSeptember.push(dataLent[i]);
-		} else if (month == "10") {
-			lentOctober.push(dataLent[i]);
-		} else if (month == "11") {
-			lentNovember.push(dataLent[i]);
-		} else if (month == "12") {
-			lentDecember.push(dataLent[i]);
+	if (dataLent != null) {
+		for (let i = 0; i < dataLent.length; i++) {
+			const d = new Date();
+			let month = dataLent[i].split("-");
+			month = month[1];
+			if (month == "01") {
+				lentJanuary.push(dataLent[i]);
+			} else if (month == "02") {
+				lentFebruary.push(dataLent[i]);
+			} else if (month == "03") {
+				lentMarch.push(dataLent[i]);
+			} else if (month == "04") {
+				lentApril.push(dataLent[i]);
+			} else if (month == "05") {
+				lentMay.push(dataLent[i]);
+			} else if (month == "06") {
+				lentJune.push(dataLent[i]);
+			} else if (month == "07") {
+				lentJuly.push(dataLent[i]);
+			} else if (month == "08") {
+				lentAugust.push(dataLent[i]);
+			} else if (month == "09") {
+				lentSeptember.push(dataLent[i]);
+			} else if (month == "10") {
+				lentOctober.push(dataLent[i]);
+			} else if (month == "11") {
+				lentNovember.push(dataLent[i]);
+			} else if (month == "12") {
+				lentDecember.push(dataLent[i]);
+			}
 		}
 	}
-
-	for (let i = 0; i < dataReturned.length; i++) {
-		const d = new Date();
-		let month = dataReturned[i].split("-");
-		month = month[1];
-		if (month == "01") {
-			returnedJanuary.push(dataReturned[i]);
-		} else if (month == "02") {
-			returnedFebruary.push(dataReturned[i]);
-		} else if (month == "03") {
-			returnedMarch.push(dataReturned[i]);
-		} else if (month == "04") {
-			returnedApril.push(dataReturned[i]);
-		} else if (month == "05") {
-			returnedMay.push(dataReturned[i]);
-		} else if (month == "06") {
-			returnedJune.push(dataReturned[i]);
-		} else if (month == "07") {
-			returnedJuly.push(dataReturned[i]);
-		} else if (month == "08") {
-			returnedAugust.push(dataReturned[i]);
-		} else if (month == "09") {
-			returnedSeptember.push(dataReturned[i]);
-		} else if (month == "10") {
-			returnedOctober.push(dataReturned[i]);
-		} else if (month == "11") {
-			returnedNovember.push(dataReturned[i]);
-		} else if (month == "12") {
-			returnedDecember.push(dataReturned[i]);
+	if (dataReturned != null) {
+		for (let i = 0; i < dataReturned.length; i++) {
+			const d = new Date();
+			let month = dataReturned[i].split("-");
+			month = month[1];
+			if (month == "01") {
+				returnedJanuary.push(dataReturned[i]);
+			} else if (month == "02") {
+				returnedFebruary.push(dataReturned[i]);
+			} else if (month == "03") {
+				returnedMarch.push(dataReturned[i]);
+			} else if (month == "04") {
+				returnedApril.push(dataReturned[i]);
+			} else if (month == "05") {
+				returnedMay.push(dataReturned[i]);
+			} else if (month == "06") {
+				returnedJune.push(dataReturned[i]);
+			} else if (month == "07") {
+				returnedJuly.push(dataReturned[i]);
+			} else if (month == "08") {
+				returnedAugust.push(dataReturned[i]);
+			} else if (month == "09") {
+				returnedSeptember.push(dataReturned[i]);
+			} else if (month == "10") {
+				returnedOctober.push(dataReturned[i]);
+			} else if (month == "11") {
+				returnedNovember.push(dataReturned[i]);
+			} else if (month == "12") {
+				returnedDecember.push(dataReturned[i]);
+			}
 		}
 	}
-
 	var chart2 = new Chartist.Bar(
 		".amp-pxl",
 		{
@@ -157,10 +159,7 @@ $(function () {
 				// On the y-axis start means left and end means right
 				position: "start",
 			},
-			high:
-				dataLent.length > dataReturned.length
-					? dataLent.length
-					: dataReturned.length,
+			high: highValue(),
 			low: "0",
 			plugins: [Chartist.plugins.tooltip()],
 		}
@@ -168,3 +167,13 @@ $(function () {
 
 	var chart = [chart2];
 });
+
+function highValue() {
+	if (dataLent != null && dataReturned != null) {
+		dataLent.length > dataReturned.length
+			? dataLent.length
+			: dataReturned.length;
+	} else {
+		("0");
+	}
+}

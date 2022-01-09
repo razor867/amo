@@ -118,7 +118,7 @@ class AssetsModel extends CI_Model
     public function total_lent()
     {
         $this->db->select('COUNT(*) as total_lent');
-        $this->db->where(['deleted_at' => NULL, 'status' => 'Lent', 'YEAR(created_at)' => date('Y')]);
+        $this->db->where(['deleted_at' => NULL, 'status' => 'Lent', 'YEAR(updated_at)' => date('Y')]);
         $query = $this->db->get('lent')->result_array();
         return $query;
     }
@@ -126,7 +126,7 @@ class AssetsModel extends CI_Model
     public function total_returned()
     {
         $this->db->select('COUNT(*) as total_returned');
-        $this->db->where(['deleted_at' => NULL, 'status' => 'Returned', 'YEAR(created_at)' => date('Y')]);
+        $this->db->where(['deleted_at' => NULL, 'status' => 'Returned', 'YEAR(updated_at)' => date('Y')]);
         $query = $this->db->get('lent')->result_array();
         return $query;
     }
@@ -158,8 +158,8 @@ class AssetsModel extends CI_Model
     public function getLentByCurrentYear()
     {
         // get lent and returned by current year
-        $this->db->select('id, created_at, status');
-        $this->db->where(['deleted_at' => NULL, 'YEAR(created_at)' => date('Y')]);
+        $this->db->select('id, updated_at, status');
+        $this->db->where(['deleted_at' => NULL, 'YEAR(updated_at)' => date('Y')]);
         $query = $this->db->get('lent');
         return $query;
     }
